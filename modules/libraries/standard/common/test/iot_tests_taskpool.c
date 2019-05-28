@@ -124,10 +124,10 @@ TEST_GROUP_RUNNER( Common_Unit_Task_Pool )
     RUN_TEST_CASE( Common_Unit_Task_Pool, Error );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyJobError );
-configPRINTF(("free HEAP %ld\n", xPortGetMinimumEverFreeHeapSize()));  
+//configPRINTF(("free HEAP %ld\n", xPortGetMinimumEverFreeHeapSize()));  
 configPRINTF(("free stack %ld\n", uxTaskGetStackHighWaterMark(NULL)));  
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError );
-configPRINTF(("free HEAP %ld\n", xPortGetMinimumEverFreeHeapSize()));  
+//configPRINTF(("free HEAP %ld\n", xPortGetMinimumEverFreeHeapSize()));  
 configPRINTF(("free stack %ld\n", uxTaskGetStackHighWaterMark(NULL)));  
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateRecyclableJob );
     RUN_TEST_CASE( Common_Unit_Task_Pool, ScheduleTasksError );

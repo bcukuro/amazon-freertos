@@ -618,14 +618,7 @@ TEST( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError )
 }
 
 /*-----------------------------------------------------------*/
-            /* In static memory mode, only the recyclable job limit may be allocated. */
-            #if IOT_STATIC_MEMORY_ONLY == 1
-                jobLimit = IOT_TASKPOOL_JOBS_RECYCLE_LIMIT;
-                IotTaskPoolJob_t pJobs[ IOT_TASKPOOL_JOBS_RECYCLE_LIMIT ];
-            #else
-                jobLimit = 2 * TEST_TASKPOOL_ITERATIONS;
-                IotTaskPoolJob_t pJobs[ 2 * TEST_TASKPOOL_ITERATIONS ];
-            #endif
+
 /**
  * @brief Test task pool job static and dynamic memory creation with bogus parameters.
  */
@@ -641,9 +634,16 @@ TEST( Common_Unit_Task_Pool, CreateRecyclableJob )
         /* Recyclable jobs. */
         {
             uint32_t count, jobLimit;
-
-
-
+configPRINTF(("a\n"));
+            /* In static memory mode, only the recyclable job limit may be allocated. */
+            #if IOT_STATIC_MEMORY_ONLY == 1
+                jobLimit = IOT_TASKPOOL_JOBS_RECYCLE_LIMIT;
+                IotTaskPoolJob_t pJobs[ IOT_TASKPOOL_JOBS_RECYCLE_LIMIT ];
+            #else
+                jobLimit = 2 * TEST_TASKPOOL_ITERATIONS;
+                IotTaskPoolJob_t pJobs[ 2 * TEST_TASKPOOL_ITERATIONS ];
+            #endif
+configPRINTF(("b\n"));
             for( count = 0; count < jobLimit; ++count )
             {
                 TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &ExecutionWithRecycleCb, NULL, &pJobs[ count ] ) == IOT_TASKPOOL_SUCCESS );

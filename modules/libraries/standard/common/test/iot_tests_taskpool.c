@@ -101,6 +101,7 @@ TEST_GROUP_RUNNER( Common_Unit_Task_Pool )
     RUN_TEST_CASE( Common_Unit_Task_Pool, Error );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyJobError );
+configPRINTF(("f\n"));    
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError );
 configPRINTF(("e\n"));
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateRecyclableJob );

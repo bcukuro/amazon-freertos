@@ -92,7 +92,7 @@ TEST_TEAR_DOWN( Common_Unit_Task_Pool )
 }
 
 /*-----------------------------------------------------------*/
-
+#include "FreeRTOS.h"
 /**
  * @brief Test group runner for task pool.
  */

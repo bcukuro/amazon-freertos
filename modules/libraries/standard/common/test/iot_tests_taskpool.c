@@ -102,6 +102,7 @@ TEST_GROUP_RUNNER( Common_Unit_Task_Pool )
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyJobError );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError );
+configPRINTF(("e\n"));
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateRecyclableJob );
     RUN_TEST_CASE( Common_Unit_Task_Pool, ScheduleTasksError );
     RUN_TEST_CASE( Common_Unit_Task_Pool, ScheduleTasks_LongRunningAndCachedJobsAndDestroy );
@@ -626,7 +627,7 @@ TEST( Common_Unit_Task_Pool, CreateRecyclableJob )
 {
     IotTaskPool_t taskPool = IOT_TASKPOOL_INITIALIZER;
     const IotTaskPoolInfo_t tpInfo = { .minThreads = 2, .maxThreads = 3, .stackSize = IOT_THREAD_DEFAULT_STACK_SIZE, .priority = IOT_THREAD_DEFAULT_PRIORITY };
-
+configPRINTF(("c\n"));
     TEST_ASSERT( IotTaskPool_Create( &tpInfo, &taskPool ) == IOT_TASKPOOL_SUCCESS );
 
     if( TEST_PROTECT() )

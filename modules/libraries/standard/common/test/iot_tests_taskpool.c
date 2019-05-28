@@ -93,6 +93,29 @@ TEST_TEAR_DOWN( Common_Unit_Task_Pool )
 
 /*-----------------------------------------------------------*/
 #include "FreeRTOS.h"
+#include "task.h"
+#include <stdio.h>
+#include <string.h>
+
+/* FreeRTOS includes. */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include "platform/iot_network.h"
+
+/* Greengrass includes. */
+#include "aws_ggd_config.h"
+#include "aws_ggd_config_defaults.h"
+#include "aws_greengrass_discovery.h"
+
+/* MQTT includes. */
+#include "aws_mqtt_agent.h"
+
+/* Demo includes. */
+#include "aws_demo_config.h"
+
+/* Includes for initialization. */
+#include "iot_mqtt.h"
 /**
  * @brief Test group runner for task pool.
  */

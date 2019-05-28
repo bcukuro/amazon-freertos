@@ -24,6 +24,7 @@
 #ifndef IOT_CONFIG_H_
 #define IOT_CONFIG_H_
 #define AWS_IOT_LOG_LEVEL_GLOBAL      AWS_IOT_LOG_INFO
+#define IOT_LOG_LEVEL_TASKPOOL        AWS_IOT_LOG_INFO
 /* Platform thread stack size and priority. */
 #define IOT_THREAD_DEFAULT_STACK_SIZE    3840
 #define IOT_THREAD_DEFAULT_PRIORITY      5

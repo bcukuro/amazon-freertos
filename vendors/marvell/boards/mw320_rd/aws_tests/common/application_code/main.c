@@ -62,7 +62,7 @@ const AppVersion32_t xAppFirmwareVersion = {
 #define mainLOGGING_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE * 8 )
 
 /* Unit test defines. */
-#define mainTEST_RUNNER_TASK_STACK_SIZE     ( configMINIMAL_STACK_SIZE * 24 )
+#define mainTEST_RUNNER_TASK_STACK_SIZE     ( configMINIMAL_STACK_SIZE * 16 )
 /* Startup defines. */
 #define mainSTARTUP_TASK_STACK_SIZE     ( configMINIMAL_STACK_SIZE * 4 )
 

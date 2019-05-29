@@ -1103,7 +1103,7 @@ configPRINTF(("b\n"));
             {
                 /* Shedule the job NOT to be recycle in the callback, since the buffer is statically allocated. */
                 TEST_ASSERT( IotTaskPool_CreateJob( &ExecutionWithoutDestroyCb, &userContext, &jobStorage, &job ) == IOT_TASKPOOL_SUCCESS );
-
+configPRINTF(("c\n"));
                 IotTaskPoolError_t errorSchedule = IotTaskPool_ScheduleDeferred( taskPool, job, 10 + ( rand() % 50 ) );
 
                 switch( errorSchedule )

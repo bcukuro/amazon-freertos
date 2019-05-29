@@ -1425,12 +1425,12 @@ TEST( Common_Unit_Task_Pool, ScheduleTasks_ScheduleAllDeferredRecyclableThenWait
     JobUserContext_t userContext;
 configPRINTF(("a\n"));
     memset( &userContext, 0, sizeof( JobUserContext_t ) );
-
+configPRINTF(("b\n"));
     /* Initialize user context. */
     TEST_ASSERT( IotMutex_Create( &userContext.lock, false ) );
-
+configPRINTF(("c\n"));
     TEST_ASSERT( IotTaskPool_Create( &tpInfo, &taskPool ) == IOT_TASKPOOL_SUCCESS );
-
+configPRINTF(("d\n"));
     if( TEST_PROTECT() )
     {
         /* Statically allocated jobs, schedule all, then wait all. */
@@ -1451,9 +1451,9 @@ configPRINTF(("a\n"));
             {
                 /* Shedule the job to be recycle in the callback. */
                 TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &ExecutionWithRecycleCb, &userContext, &tpJobs[ count ] ) == IOT_TASKPOOL_SUCCESS );
-
+configPRINTF(("e\n"));
                 IotTaskPoolError_t errorSchedule = IotTaskPool_ScheduleDeferred( taskPool, tpJobs[ count ], 10 + ( rand() % 500 ) );
-
+configPRINTF(("f\n"));
                 switch( errorSchedule )
                 {
                     case IOT_TASKPOOL_SUCCESS:

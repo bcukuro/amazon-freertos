@@ -1643,7 +1643,7 @@ TEST( Common_Unit_Task_Pool, ScheduleTasks_ReScheduleDeferred )
     TEST_ASSERT( IotMutex_Create( &userContext.lock, false ) );
 configPRINTF(("a\n"));
     TEST_ASSERT( IotTaskPool_Create( &tpInfo, &taskPool ) == IOT_TASKPOOL_SUCCESS );
-
+configPRINTF(("b\n"));
     if( TEST_PROTECT() )
     {
         /* Statically allocated jobs, schedule all, then wait all. */

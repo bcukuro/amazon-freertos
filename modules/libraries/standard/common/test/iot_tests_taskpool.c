@@ -121,15 +121,15 @@ TEST_TEAR_DOWN( Common_Unit_Task_Pool )
  */
 TEST_GROUP_RUNNER( Common_Unit_Task_Pool )
 {
-        RUN_TEST_CASE( Common_Unit_Task_Pool, Error );
-    RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );
-    RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyJobError );
+    //RUN_TEST_CASE( Common_Unit_Task_Pool, Error );
+    //RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );
+   // RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyJobError );
 configPRINTF(("free HEAP %ld\n", xPortGetFreeHeapSize()));  
 configPRINTF(("free stack %ld\n", uxTaskGetStackHighWaterMark(NULL)));  
-    RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError );
+   // RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError );
 configPRINTF(("free HEAP %ld\n", xPortGetFreeHeapSize()));  
 configPRINTF(("free stack %ld\n", uxTaskGetStackHighWaterMark(NULL)));  
-    RUN_TEST_CASE( Common_Unit_Task_Pool, CreateRecyclableJob );
+    //RUN_TEST_CASE( Common_Unit_Task_Pool, CreateRecyclableJob );
     RUN_TEST_CASE( Common_Unit_Task_Pool, ScheduleTasksError );
     RUN_TEST_CASE( Common_Unit_Task_Pool, ScheduleTasks_LongRunningAndCachedJobsAndDestroy );
     RUN_TEST_CASE( Common_Unit_Task_Pool, ScheduleTasks_Grow );

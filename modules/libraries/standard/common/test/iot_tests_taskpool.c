@@ -1087,9 +1087,9 @@ TEST( Common_Unit_Task_Pool, ScheduleTasks_ScheduleOneDeferredThenWait )
 
     /* Initialize user context. */
     TEST_ASSERT( IotMutex_Create( &userContext.lock, false ) );
-
+configPRINTF(("a\n"));
     TEST_ASSERT( IotTaskPool_Create( &tpInfo, &taskPool ) == IOT_TASKPOOL_SUCCESS );
-
+configPRINTF(("b\n"));
     if( TEST_PROTECT() )
     {
         /* Statically allocated job, schedule one, then wait. */

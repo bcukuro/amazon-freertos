@@ -553,7 +553,7 @@ TEST( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError )
 {
     IotTaskPool_t taskPool = IOT_TASKPOOL_INITIALIZER;
     const IotTaskPoolInfo_t tpInfo = { .minThreads = 2, .maxThreads = 3, .stackSize = IOT_THREAD_DEFAULT_STACK_SIZE, .priority = IOT_THREAD_DEFAULT_PRIORITY };
-
+ IotClock_SleepMs( 1000 );
     TEST_ASSERT( IotTaskPool_Create( &tpInfo, &taskPool ) == IOT_TASKPOOL_SUCCESS );
  IotClock_SleepMs( 1000 );
     if( TEST_PROTECT() )

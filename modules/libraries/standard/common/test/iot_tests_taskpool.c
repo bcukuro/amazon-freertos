@@ -1695,7 +1695,7 @@ configPRINTF(("b\n"));
                 IotTaskPoolError_t errorReSchedule;
 
                 errorReSchedule = IotTaskPool_ScheduleDeferred( taskPool, tpJobs[ count ], 10 + ( rand() % 500 ) );
-
+configPRINTF(("c\n"));
                 switch( errorReSchedule )
                 {
                     case IOT_TASKPOOL_SUCCESS:
@@ -1721,7 +1721,7 @@ configPRINTF(("b\n"));
                 IotClock_SleepMs( 50 );
 
                 IotMutex_Lock( &userContext.lock );
-
+configPRINTF(("d\n"));
                 if( userContext.counter == scheduled )
                 {
                     IotMutex_Unlock( &userContext.lock );

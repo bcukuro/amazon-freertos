@@ -601,7 +601,7 @@ TEST( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError )
             /* NULL job handle. */
             TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &ExecutionWithRecycleCb, NULL, NULL ) == IOT_TASKPOOL_BAD_PARAMETER );
         }
-        
+
         /* Create/Destroy. */
         {
             IotTaskPoolJob_t pJob = IOT_TASKPOOL_JOB_INITIALIZER;
@@ -610,6 +610,27 @@ TEST( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError )
             TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &BlankExecution, NULL, &pJob ) == IOT_TASKPOOL_SUCCESS );
             /* Recycle the job. */
             TEST_ASSERT( IotTaskPool_DestroyRecyclableJob( taskPool, pJob ) == IOT_TASKPOOL_SUCCESS );
+        }
+        
+                /* Create/Schedule/Destroy. */
+        {
+            IotTaskPoolJob_t pJob = IOT_TASKPOOL_JOB_INITIALIZER;
+
+            /* Create legal recyclable job. */
+            TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &BlankExecution, NULL, &pJob ) == IOT_TASKPOOL_SUCCESS );
+            /* Schedule deferred, then try to destroy it. */
+            TEST_ASSERT( IotTaskPool_ScheduleDeferred( taskPool, pJob, ONE_HOUR_FROM_NOW_MS ) == IOT_TASKPOOL_SUCCESS );
+            TEST_ASSERT( IotTaskPool_DestroyRecyclableJob( taskPool, pJob ) == IOT_TASKPOOL_SUCCESS );
+        }
+
+        /* Create/Recycle. */
+        {
+            IotTaskPoolJob_t pJob = IOT_TASKPOOL_JOB_INITIALIZER;
+
+            /* Create legal recyclable job. */
+            TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &BlankExecution, NULL, &pJob ) == IOT_TASKPOOL_SUCCESS );
+            /* Illegally recycle legal static job. */
+            TEST_ASSERT( IotTaskPool_RecycleJob( taskPool, pJob ) == IOT_TASKPOOL_SUCCESS );
         }
     }
 

@@ -643,7 +643,7 @@ TEST( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError )
     }
 
     TEST_ASSERT( IotTaskPool_Destroy( taskPool ) == IOT_TASKPOOL_SUCCESS );
-configPRINTF("a\n");
+configPRINTF(("a\n"));
 }
 
 /*-----------------------------------------------------------*/

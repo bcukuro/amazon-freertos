@@ -59,12 +59,12 @@ const AppVersion32_t xAppFirmwareVersion = {
 
 /* Logging Task Defines. */
 #define mainLOGGING_MESSAGE_QUEUE_LENGTH    ( 15 )
-#define mainLOGGING_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE * 8 )
+#define mainLOGGING_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE * 16 )
 
 /* Unit test defines. */
 #define mainTEST_RUNNER_TASK_STACK_SIZE     ( configMINIMAL_STACK_SIZE * 16 )
 /* Startup defines. */
-#define mainSTARTUP_TASK_STACK_SIZE     ( configMINIMAL_STACK_SIZE * 4 )
+#define mainSTARTUP_TASK_STACK_SIZE     ( configMINIMAL_STACK_SIZE * 16 )
 
 /* The task delay for allowing the lower priority logging task to print out Wi-Fi 
  * failure status before blocking indefinitely. */

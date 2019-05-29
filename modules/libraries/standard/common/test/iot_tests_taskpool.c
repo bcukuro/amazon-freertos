@@ -574,7 +574,7 @@ IotTaskPoolJobStatus_t statusAtCancellation = IOT_TASKPOOL_STATUS_READY;
             /* Schedule deferred, then try to destroy it. */
             TEST_ASSERT( IotTaskPool_ScheduleDeferred( taskPool, pJob, ONE_HOUR_FROM_NOW_MS ) == IOT_TASKPOOL_SUCCESS );
 
-            error = IotTaskPool_TryCancel( taskPool, pJob, &statusAtCancellation );
+             IotTaskPool_TryCancel( taskPool, pJob, &statusAtCancellation );
             TEST_ASSERT( IotTaskPool_DestroyRecyclableJob( taskPool, pJob ) == IOT_TASKPOOL_SUCCESS );
         }
     }

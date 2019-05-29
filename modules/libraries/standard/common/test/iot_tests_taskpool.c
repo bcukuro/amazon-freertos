@@ -848,7 +848,7 @@ TEST( Common_Unit_Task_Pool, ScheduleTasks_Grow )
 {
     IotTaskPool_t taskPool = IOT_TASKPOOL_INITIALIZER;
     const IotTaskPoolInfo_t tpInfo = { .minThreads = 2, .maxThreads = TEST_TAKPOOL_NUMBER_OF_JOBS, .stackSize = IOT_THREAD_DEFAULT_STACK_SIZE, .priority = IOT_THREAD_DEFAULT_PRIORITY };
-
+configPRINTF(("a\n"));
     JobBlockingUserContext_t userContext;
 
     /* Initialize user context. */
@@ -856,7 +856,7 @@ TEST( Common_Unit_Task_Pool, ScheduleTasks_Grow )
     TEST_ASSERT( IotSemaphore_Create( &userContext.block, 0, TEST_TAKPOOL_NUMBER_OF_JOBS ) );
 
     TEST_ASSERT( IotTaskPool_Create( &tpInfo, &taskPool ) == IOT_TASKPOOL_SUCCESS );
-
+configPRINTF(("b\n"));
     if( TEST_PROTECT() )
     {
         /* Statically allocated job, schedule one, then wait. */

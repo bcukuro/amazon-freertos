@@ -1626,7 +1626,8 @@ configPRINTF(("b\n"));
 }
 
 /*-----------------------------------------------------------*/
-
+                IotTaskPoolJobStorage_t tpJobsStorage[ TEST_TASKPOOL_ITERATIONS ];
+                IotTaskPoolJob_t tpJobs[ TEST_TASKPOOL_ITERATIONS ];
 /**
  * @brief Test scheduling and re-scheduling (without canceling first) a set of deferred jobs.
  */
@@ -1658,8 +1659,7 @@ configPRINTF(("b\n"));
                 IotTaskPoolJob_t tpJobs[ IOT_TASKPOOL_JOBS_RECYCLE_LIMIT ];
             #else
                 maxJobs = TEST_TASKPOOL_ITERATIONS;
-                IotTaskPoolJobStorage_t tpJobsStorage[ TEST_TASKPOOL_ITERATIONS ];
-                IotTaskPoolJob_t tpJobs[ TEST_TASKPOOL_ITERATIONS ];
+
             #endif
 
             /* Schedule all jobs. */

@@ -615,14 +615,16 @@ TEST( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError )
                 /* Create/Schedule/Destroy. */
         {
             IotTaskPoolJob_t pJob = IOT_TASKPOOL_JOB_INITIALIZER;
-
+            IotClock_SleepMs( 1000 );
             /* Create legal recyclable job. */
             TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &BlankExecution, NULL, &pJob ) == IOT_TASKPOOL_SUCCESS );
+             IotClock_SleepMs( 1000 );
             /* Schedule deferred, then try to destroy it. */
             TEST_ASSERT( IotTaskPool_ScheduleDeferred( taskPool, pJob, ONE_HOUR_FROM_NOW_MS ) == IOT_TASKPOOL_SUCCESS );
+             IotClock_SleepMs( 1000 );
             TEST_ASSERT( IotTaskPool_DestroyRecyclableJob( taskPool, pJob ) == IOT_TASKPOOL_SUCCESS );
         }
- IotClock_SleepMs( 1000 );
+
     }
 
 

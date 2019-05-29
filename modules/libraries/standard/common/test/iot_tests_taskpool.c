@@ -1423,7 +1423,7 @@ TEST( Common_Unit_Task_Pool, ScheduleTasks_ScheduleAllDeferredRecyclableThenWait
     const IotTaskPoolInfo_t tpInfo = { .minThreads = 2, .maxThreads = 3, .stackSize = IOT_THREAD_DEFAULT_STACK_SIZE, .priority = IOT_THREAD_DEFAULT_PRIORITY };
 
     JobUserContext_t userContext;
-
+configPRINTF(("a\n"));
     memset( &userContext, 0, sizeof( JobUserContext_t ) );
 
     /* Initialize user context. */

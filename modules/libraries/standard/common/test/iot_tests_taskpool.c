@@ -247,6 +247,7 @@ static void ExecutionWithoutDestroyCb( IotTaskPool_t pTaskPool,
                                        IotTaskPoolJob_t pJob,
                                        void * pContext )
 {
+    configPRINTF(("Exectuting1\n"));
     JobUserContext_t * pUserContext;
     IotTaskPoolError_t error;
     IotTaskPoolJobStatus_t status;
@@ -256,14 +257,15 @@ static void ExecutionWithoutDestroyCb( IotTaskPool_t pTaskPool,
     error = IotTaskPool_GetStatus( pTaskPool, pJob, &status );
     TEST_ASSERT( ( status == IOT_TASKPOOL_STATUS_COMPLETED ) || ( status == IOT_TASKPOOL_STATUS_UNDEFINED ) );
     TEST_ASSERT( ( error == IOT_TASKPOOL_SUCCESS ) || ( error == IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ) );
-
+    configPRINTF(("a\n"));
     EmulateWork();
-
+    configPRINTF(("b\n"));
     pUserContext = ( JobUserContext_t * ) pContext;
 
     IotMutex_Lock( &pUserContext->lock );
     pUserContext->counter++;
     IotMutex_Unlock( &pUserContext->lock );
+        configPRINTF(("end1\n"));
 }
 
 /**
@@ -278,19 +280,20 @@ static void ExecutionBlockingWithoutDestroyCb( IotTaskPool_t pTaskPool,
     IotTaskPoolJobStatus_t status;
 
     /*TEST_ASSERT( IotLink_IsLinked( &pJob->link ) == false ); */
-
+configPRINTF(("Exectuting2\n"));
     error = IotTaskPool_GetStatus( pTaskPool, pJob, &status );
     TEST_ASSERT( ( status == IOT_TASKPOOL_STATUS_COMPLETED ) || ( status == IOT_TASKPOOL_STATUS_UNDEFINED ) );
     TEST_ASSERT( ( error == IOT_TASKPOOL_SUCCESS ) || ( error == IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ) );
-
+configPRINTF(("a\n"));
     pUserContext = ( JobBlockingUserContext_t * ) pContext;
 
     /* Signal that the callback has been called. */
     IotSemaphore_Post( &pUserContext->signal );
-
+configPRINTF(("b\n"));
     /* This callback will emulate a blocking wait, for the sole purpose of stealing a task pool
      * thread and test that the taskpool can actually grow as expected. */
     IotSemaphore_Wait( &pUserContext->block );
+configPRINTF(("end2\n"));
 }
 
 /**
@@ -1133,9 +1136,9 @@ configPRINTF(("e\n"));
                 while( true )
                 {
                     IotClock_SleepMs( 50 );
-
+configPRINTF(("g\n"));
                     IotMutex_Lock( &userContext.lock );
-
+configPRINTF(("h\n"));
                     if( userContext.counter == scheduled )
                     {
                         IotMutex_Unlock( &userContext.lock );

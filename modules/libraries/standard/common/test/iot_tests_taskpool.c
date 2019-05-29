@@ -201,7 +201,7 @@ TEST_GROUP_RUNNER( Common_Unit_Task_Pool )
  */
 static void EmulateWork()
 {
-    IotClock_SleepMs( 1 );
+    IotClock_SleepMs( rand() % TEST_TASKPOOL_WORK_ITEM_DURATION_MAX );
 }
 
 /**

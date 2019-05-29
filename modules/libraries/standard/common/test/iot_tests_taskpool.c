@@ -67,7 +67,13 @@ typedef struct JobBlockingUserContext
 } JobBlockingUserContext_t;
 
 /*-----------------------------------------------------------*/
-
+/**
+ * @brief A function that emulates some work in the task pool execution by sleeping.
+ */
+static void EmulateWork()
+{
+    IotClock_SleepMs( rand() % TEST_TASKPOOL_WORK_ITEM_DURATION_MAX );
+}
 /**
  * @brief Test group for task pool tests.
  */
@@ -197,13 +203,7 @@ TEST_GROUP_RUNNER( Common_Unit_Task_Pool )
 
 /* ---------------------------------------------------------- */
 
-/**
- * @brief A function that emulates some work in the task pool execution by sleeping.
- */
-static void EmulateWork()
-{
-    IotClock_SleepMs( rand() % TEST_TASKPOOL_WORK_ITEM_DURATION_MAX );
-}
+
 
 /**
  * @brief A function that emulates some work in the task pool execution by sleeping.

@@ -130,7 +130,7 @@
 
 /* Default platform thread stack size and priority. */
 #ifndef IOT_THREAD_DEFAULT_STACK_SIZE
-    #define IOT_THREAD_DEFAULT_STACK_SIZE    2048
+    #define IOT_THREAD_DEFAULT_STACK_SIZE    5000
 #endif
 #ifndef IOT_THREAD_DEFAULT_PRIORITY
     #define IOT_THREAD_DEFAULT_PRIORITY      tskIDLE_PRIORITY

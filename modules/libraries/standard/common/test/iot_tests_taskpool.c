@@ -89,6 +89,7 @@ TEST_SETUP( Common_Unit_Task_Pool )
  */
 TEST_TEAR_DOWN( Common_Unit_Task_Pool )
 {
+    EmulateWork();
 }
 
 /*-----------------------------------------------------------*/

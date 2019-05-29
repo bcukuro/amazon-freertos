@@ -98,6 +98,11 @@ TEST_TEAR_DOWN( Common_Unit_Task_Pool )
  */
 TEST_GROUP_RUNNER( Common_Unit_Task_Pool )
 {
+
+for(;;)
+{
+    RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );
+}
     RUN_TEST_CASE( Common_Unit_Task_Pool, Error );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyJobError );

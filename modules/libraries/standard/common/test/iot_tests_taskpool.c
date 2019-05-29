@@ -104,6 +104,7 @@ for(;;)
     RUN_TEST_CASE( Common_Unit_Task_Pool, Error );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyJobError );
+    RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError );
 }
     RUN_TEST_CASE( Common_Unit_Task_Pool, Error );
     RUN_TEST_CASE( Common_Unit_Task_Pool, CreateDestroyMaxThreads );

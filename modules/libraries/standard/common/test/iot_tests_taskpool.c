@@ -1105,7 +1105,7 @@ configPRINTF(("b\n"));
                 TEST_ASSERT( IotTaskPool_CreateJob( &ExecutionWithoutDestroyCb, &userContext, &jobStorage, &job ) == IOT_TASKPOOL_SUCCESS );
 configPRINTF(("c\n"));
                 IotTaskPoolError_t errorSchedule = IotTaskPool_ScheduleDeferred( taskPool, job, 10 + ( rand() % 50 ) );
-
+configPRINTF(("d\n"));
                 switch( errorSchedule )
                 {
                     case IOT_TASKPOOL_SUCCESS:
@@ -1127,7 +1127,7 @@ configPRINTF(("c\n"));
                     default:
                         TEST_ASSERT( false );
                 }
-
+configPRINTF(("e\n"));
                 /* Ensure callback actually executed. */
                 while( true )
                 {
@@ -1141,7 +1141,7 @@ configPRINTF(("c\n"));
 
                         break;
                     }
-
+configPRINTF(("f\n"));
                     IotMutex_Unlock( &userContext.lock );
                 }
 

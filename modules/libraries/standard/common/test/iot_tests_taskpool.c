@@ -227,8 +227,17 @@ static void ExecutionWithoutDestroyCb( IotTaskPool_t pTaskPool,
     /*TEST_ASSERT( IotLink_IsLinked( &pJob->link ) == false ); */
 
     error = IotTaskPool_GetStatus( pTaskPool, pJob, &status );
-    TEST_ASSERT( ( status == IOT_TASKPOOL_STATUS_COMPLETED ) || ( status == IOT_TASKPOOL_STATUS_UNDEFINED ) );
-    TEST_ASSERT( ( error == IOT_TASKPOOL_SUCCESS ) || ( error == IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ) );
+
+    if(( status != IOT_TASKPOOL_STATUS_COMPLETED ) && ( status != IOT_TASKPOOL_STATUS_UNDEFINED ))
+    {
+        configPRINTF(("Wrong status %d\n", status));
+    }
+
+
+    if(( error != IOT_TASKPOOL_SUCCESS ) && ( error != IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ))
+    {
+        configPRINTF(("Wrong error status %d\n", error));
+    }
 
     EmulateWork();
 
@@ -253,8 +262,14 @@ static void ExecutionBlockingWithoutDestroyCb( IotTaskPool_t pTaskPool,
     /*TEST_ASSERT( IotLink_IsLinked( &pJob->link ) == false ); */
 
     error = IotTaskPool_GetStatus( pTaskPool, pJob, &status );
-    TEST_ASSERT( ( status == IOT_TASKPOOL_STATUS_COMPLETED ) || ( status == IOT_TASKPOOL_STATUS_UNDEFINED ) );
-    TEST_ASSERT( ( error == IOT_TASKPOOL_SUCCESS ) || ( error == IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ) );
+    if(( status != IOT_TASKPOOL_STATUS_COMPLETED ) && ( status != IOT_TASKPOOL_STATUS_UNDEFINED ))
+    {
+        configPRINTF(("Wrong status %d\n", status));
+    }
+    if(( error != IOT_TASKPOOL_SUCCESS ) && ( error != IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ))
+    {
+        configPRINTF(("Wrong error status %d\n", error));
+    }
 
     pUserContext = ( JobBlockingUserContext_t * ) pContext;
 
@@ -280,8 +295,14 @@ static void ExecutionWithRecycleCb( IotTaskPool_t pTaskPool,
     /*TEST_ASSERT( IotLink_IsLinked( &pJob->link ) == false ); */
 
     error = IotTaskPool_GetStatus( pTaskPool, pJob, &status );
-    TEST_ASSERT( ( status == IOT_TASKPOOL_STATUS_COMPLETED ) || ( status == IOT_TASKPOOL_STATUS_UNDEFINED ) );
-    TEST_ASSERT( ( error == IOT_TASKPOOL_SUCCESS ) || ( error == IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ) );
+    if(( status != IOT_TASKPOOL_STATUS_COMPLETED ) && ( status != IOT_TASKPOOL_STATUS_UNDEFINED ))
+    {
+        configPRINTF(("Wrong status %d\n", status));
+    }
+    if(( error != IOT_TASKPOOL_SUCCESS ) && ( error != IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ))
+    {
+        configPRINTF(("Wrong error status %d\n", error));
+    }
 
     EmulateWork();
 
@@ -308,8 +329,14 @@ static void ExecutionLongWithoutDestroyCb( IotTaskPool_t pTaskPool,
     /*TEST_ASSERT( IotLink_IsLinked( &pJob->link ) == false ); */
 
     error = IotTaskPool_GetStatus( pTaskPool, pJob, &status );
-    TEST_ASSERT( ( status == IOT_TASKPOOL_STATUS_COMPLETED ) || ( status == IOT_TASKPOOL_STATUS_UNDEFINED ) );
-    TEST_ASSERT( ( error == IOT_TASKPOOL_SUCCESS ) || ( error == IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ) );
+    if(( status != IOT_TASKPOOL_STATUS_COMPLETED ) && ( status != IOT_TASKPOOL_STATUS_UNDEFINED ))
+    {
+        configPRINTF(("Wrong status %d\n", status));
+    }
+    if(( error != IOT_TASKPOOL_SUCCESS ) && ( error != IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ))
+    {
+        configPRINTF(("Wrong error status %d\n", error));
+    }
 
     EmulateWorkLong();
 
@@ -337,8 +364,14 @@ static void BlankExecution( IotTaskPool_t pTaskPool,
     /*TEST_ASSERT( IotLink_IsLinked( &pJob->link ) == false ); */
 
     error = IotTaskPool_GetStatus( pTaskPool, pJob, &status );
-    TEST_ASSERT( ( status == IOT_TASKPOOL_STATUS_COMPLETED ) || ( status == IOT_TASKPOOL_STATUS_UNDEFINED ) );
-    TEST_ASSERT( ( error == IOT_TASKPOOL_SUCCESS ) || ( error == IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ) );
+    if(( status != IOT_TASKPOOL_STATUS_COMPLETED ) && ( status != IOT_TASKPOOL_STATUS_UNDEFINED ))
+    {
+        configPRINTF(("Wrong status %d\n", status));
+    }
+    if(( error != IOT_TASKPOOL_SUCCESS ) && ( error != IOT_TASKPOOL_SHUTDOWN_IN_PROGRESS ))
+    {
+        configPRINTF(("Wrong error status %d\n", error));
+    }
 }
 
 /* ---------------------------------------------------------------------------------------------- */

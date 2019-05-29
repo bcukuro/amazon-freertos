@@ -72,7 +72,7 @@ typedef struct JobBlockingUserContext
  */
 static void EmulateWork()
 {
-    IotClock_SleepMs( rand() % TEST_TASKPOOL_WORK_ITEM_DURATION_MAX );
+    IotClock_SleepMs( 100 );
 }
 /**
  * @brief Test group for task pool tests.

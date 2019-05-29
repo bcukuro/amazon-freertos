@@ -589,6 +589,29 @@ TEST( Common_Unit_Task_Pool, CreateDestroyRecycleRecyclableJobError )
  IotClock_SleepMs( 1000 );
     TEST_ASSERT( IotTaskPool_Create( &tpInfo, &taskPool ) == IOT_TASKPOOL_SUCCESS );
  IotClock_SleepMs( 1000 );
+    if( TEST_PROTECT() )
+    {
+                /* Trivial parameter validation jobs. */
+        {
+            IotTaskPoolJob_t pJob = IOT_TASKPOOL_JOB_INITIALIZER;
+            /* NULL callback. */
+            TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, NULL, NULL, &pJob ) == IOT_TASKPOOL_BAD_PARAMETER );
+            /* NULL engine handle. */
+            TEST_ASSERT( IotTaskPool_CreateRecyclableJob( NULL, &ExecutionWithRecycleCb, NULL, &pJob ) == IOT_TASKPOOL_BAD_PARAMETER );
+            /* NULL job handle. */
+            TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &ExecutionWithRecycleCb, NULL, NULL ) == IOT_TASKPOOL_BAD_PARAMETER );
+        }
+        
+        /* Create/Destroy. */
+        {
+            IotTaskPoolJob_t pJob = IOT_TASKPOOL_JOB_INITIALIZER;
+
+            /* Create legal recyclable job. */
+            TEST_ASSERT( IotTaskPool_CreateRecyclableJob( taskPool, &BlankExecution, NULL, &pJob ) == IOT_TASKPOOL_SUCCESS );
+            /* Recycle the job. */
+            TEST_ASSERT( IotTaskPool_DestroyRecyclableJob( taskPool, pJob ) == IOT_TASKPOOL_SUCCESS );
+        }
+    }
 
 
     TEST_ASSERT( IotTaskPool_Destroy( taskPool ) == IOT_TASKPOOL_SUCCESS );

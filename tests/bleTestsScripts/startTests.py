@@ -1,10 +1,12 @@
 import Queue
 import sys
+import os
 import threading
 import securityAgent
 import time
 from testClass import runTest
 from bleAdapter import bleAdapter
+import testutils
 import dbus.mainloop.glib
 try:
   from gi.repository import GObject
@@ -41,114 +43,128 @@ def notificationCb(uuid, value):
         #indicationEvent.set()
         mainloop.quit()
 
-def main():
-    scan_filter = dict()
+def teardown_test(agent):
+    securityAgent.removeSecurityAgent()
 
-    bleAdapter.init()
-    agent = securityAgent.createSecurityAgent()
+    os.system("sudo rm -rf \"/var/lib/bluetooth/*\"")
+    os.system("sudo hciconfig hci0 reset")
 
-    scan_filter.update({ "UUIDs": [runTest.DUT_UUID]})
-    bleAdapter.setDiscoveryFilter(scan_filter)
+    testutils.removeBondedDevices()
+    return agent
 
-    #Discovery test
-    bleAdapter.startDiscovery(discoveryEventCb)
-    mainloop.run()
-    isTestSuccessFull = True
-    runTest.submitTestResult(isTestSuccessFull, runTest.advertisement)
-    bleAdapter.stopDiscovery()
+def main(number_of_tests=1):
+    agent = None
 
-    #Simple Connection test
-    testDevice = runTest.getTestDevice()
-    isTestSuccessFull = bleAdapter.connect(testDevice)
-    runTest.submitTestResult(isTestSuccessFull, runTest.simpleConnection)
-    time.sleep(2) #wait for connection parameters update
+    for i in range(number_of_tests):
+        scan_filter = dict()
 
-    #Discover all primary services
-    isTestSuccessFull = runTest.discoverPrimaryServices()
-    runTest.submitTestResult(isTestSuccessFull, runTest.discoverPrimaryServices)
+        bleAdapter.init()
+        agent = securityAgent.createSecurityAgent(agent=agent)
 
-    bleAdapter.gatt.updateLocalAttributeTable()
+        scan_filter.update({ "UUIDs": [runTest.DUT_UUID]})
+        bleAdapter.setDiscoveryFilter(scan_filter)
 
-    #Check device not present. After discovery of services, advertisement should have stopped.
-    runTest.stopAdvertisement(scan_filter)
+        #Discovery test
+        bleAdapter.startDiscovery(discoveryEventCb)
+        mainloop.run()
+        isTestSuccessFull = True
+        runTest.submitTestResult(isTestSuccessFull, runTest.advertisement)
+        bleAdapter.stopDiscovery()
+
+        #Simple Connection test
+        testDevice = runTest.getTestDevice()
+        isTestSuccessFull = bleAdapter.connect(testDevice)
+        runTest.submitTestResult(isTestSuccessFull, runTest.simpleConnection)
+        time.sleep(2) #wait for connection parameters update
+
+        #Discover all primary services
+        isTestSuccessFull = runTest.discoverPrimaryServices()
+        runTest.submitTestResult(isTestSuccessFull, runTest.discoverPrimaryServices)
+
+        bleAdapter.gatt.updateLocalAttributeTable()
+
+        #Check device not present. After discovery of services, advertisement should have stopped.
+        runTest.stopAdvertisement(scan_filter)
 
 
-    #Change MTU size
-    #bleAdapter.readLocalMTU()
+        #Change MTU size
+        #bleAdapter.readLocalMTU()
 
-    #Check attribute table UUIDs
-    bleAdapter.gatt.updateLocalAttributeTable()
-    isTestSuccessFull = runTest.checkUUIDs(bleAdapter.gatt)
-    runTest.submitTestResult(isTestSuccessFull, runTest.checkUUIDs)
+        #Check attribute table UUIDs
+        bleAdapter.gatt.updateLocalAttributeTable()
+        isTestSuccessFull = runTest.checkUUIDs(bleAdapter.gatt)
+        runTest.submitTestResult(isTestSuccessFull, runTest.checkUUIDs)
 
-    #Check attribute table properties
-    isTestSuccessFull = runTest.checkProperties(bleAdapter.gatt)
-    runTest.submitTestResult(isTestSuccessFull, runTest.checkProperties)
+        #Check attribute table properties
+        isTestSuccessFull = runTest.checkProperties(bleAdapter.gatt)
+        runTest.submitTestResult(isTestSuccessFull, runTest.checkProperties)
 
-    #Check read/write, simple connection
-    isTestSuccessFull = runTest.readWriteSimpleConnection()
-    runTest.submitTestResult(isTestSuccessFull, runTest.readWriteSimpleConnection)
+        #Check read/write, simple connection
+        isTestSuccessFull = runTest.readWriteSimpleConnection()
+        runTest.submitTestResult(isTestSuccessFull, runTest.readWriteSimpleConnection)
 
-    #check write without response
-    isTestSuccessFull = runTest.writeWithoutResponse()
-    runTest.submitTestResult(isTestSuccessFull, runTest.writeWithoutResponse)
+        #check write without response
+        isTestSuccessFull = runTest.writeWithoutResponse()
+        runTest.submitTestResult(isTestSuccessFull, runTest.writeWithoutResponse)
 
-    #Enable and receive notification and indication then disable.
-    bleAdapter.setNotificationCallBack(notificationCb)
-    bleAdapter.subscribeForNotification(runTest.DUT_NOTIFY_CHAR_UUID) #subscribe for next test
-    bleAdapter.subscribeForNotification(runTest.DUT_INDICATE_CHAR_UUID) #subscribe for next test
+        #Enable and receive notification and indication then disable.
+        bleAdapter.setNotificationCallBack(notificationCb)
+        bleAdapter.subscribeForNotification(runTest.DUT_NOTIFY_CHAR_UUID) #subscribe for next test
+        bleAdapter.subscribeForNotification(runTest.DUT_INDICATE_CHAR_UUID) #subscribe for next test
 
-    isTestSuccessFull = True
-    mainloop.run()
-    runTest.submitTestResult(isTestSuccessFull, runTest.notification)
+        isTestSuccessFull = True
+        mainloop.run()
+        runTest.submitTestResult(isTestSuccessFull, runTest.notification)
 
-    isTestSuccessFull = True
-    mainloop.run()
-    runTest.submitTestResult(isTestSuccessFull, runTest.indication)
+        isTestSuccessFull = True
+        mainloop.run()
+        runTest.submitTestResult(isTestSuccessFull, runTest.indication)
 
-    isTestSuccessFull = bleAdapter.subscribeForNotification(runTest.DUT_NOTIFY_CHAR_UUID, subscribe = False) #unsubscribe
-    isTestSuccessFull = True
-    runTest.submitTestResult(isTestSuccessFull, runTest.removeNotification)
+        isTestSuccessFull = bleAdapter.subscribeForNotification(runTest.DUT_NOTIFY_CHAR_UUID, subscribe = False) #unsubscribe
+        isTestSuccessFull = True
+        runTest.submitTestResult(isTestSuccessFull, runTest.removeNotification)
 
-    isTestSuccessFull = bleAdapter.subscribeForNotification(runTest.DUT_INDICATE_CHAR_UUID, subscribe = False) #unsubscribe
-    isTestSuccessFull = True
-    runTest.submitTestResult(isTestSuccessFull, runTest.removeIndication)
+        isTestSuccessFull = bleAdapter.subscribeForNotification(runTest.DUT_INDICATE_CHAR_UUID, subscribe = False) #unsubscribe
+        isTestSuccessFull = True
+        runTest.submitTestResult(isTestSuccessFull, runTest.removeIndication)
 
-    #Check writing to protected characteristic triggers pairing
-    isTestSuccessFull = runTest.pairing()
-    runTest.submitTestResult(isTestSuccessFull, runTest.pairing)
-    bleAdapter.bondToRemoteDevice()
+        #Check writing to protected characteristic triggers pairing
+        isTestSuccessFull = runTest.pairing()
+        runTest.submitTestResult(isTestSuccessFull, runTest.pairing)
+        bleAdapter.bondToRemoteDevice()
 
-    #Check writing to protected characteristic after successfull pairing succeed
-    time.sleep(2) #wait before starting next test
-    isTestSuccessFull = runTest.readWriteProtectedAttributesWhilePaired()
-    runTest.submitTestResult(isTestSuccessFull, runTest.readWriteProtectedAttributesWhilePaired)
+        #Check writing to protected characteristic after successfull pairing succeed
+        time.sleep(2) #wait before starting next test
+        isTestSuccessFull = runTest.readWriteProtectedAttributesWhilePaired()
+        runTest.submitTestResult(isTestSuccessFull, runTest.readWriteProtectedAttributesWhilePaired)
 
-    #disconnect, Note it is not a test happening on bluez, the DUT is waiting for a disconnect Cb
-    runTest.disconnect()
+        #disconnect, Note it is not a test happening on bluez, the DUT is waiting for a disconnect Cb
+        runTest.disconnect()
 
-    #reconnect! Since devices bonded, it should not ask for pairing again. Security agent can be destroyed
-    securityAgent.removeSecurityAgent() #remove security agent so as not to trigger auto pairing.
-    bleAdapter.setDiscoveryFilter(scan_filter)
-    bleAdapter.startDiscovery(discoveryStartedCb)#wait for DUT to start advertising
-    mainloop.run()
-    bleAdapter.stopDiscovery()
-    runTest.reconnectWhileBonded()
+        #reconnect! Since devices bonded, it should not ask for pairing again. Security agent can be destroyed
+        securityAgent.removeSecurityAgent() #remove security agent so as not to trigger auto pairing.
+        bleAdapter.setDiscoveryFilter(scan_filter)
+        bleAdapter.startDiscovery(discoveryStartedCb)#wait for DUT to start advertising
+        mainloop.run()
+        bleAdapter.stopDiscovery()
+        runTest.reconnectWhileBonded()
 
-    #reconnect while not bonded. Pairing should fail since Just works is not accepted
-    bleAdapter.disconnect()
-    bleAdapter.removeBondedDevices()
-    time.sleep(2) #wait for bonded devices to be deleted
-    bleAdapter.setDiscoveryFilter(scan_filter)
-    bleAdapter.startDiscovery(discoveryEventCb)
-    mainloop.run()
-    bleAdapter.stopDiscovery()
+        #reconnect while not bonded. Pairing should fail since Just works is not accepted
+        bleAdapter.disconnect()
+        bleAdapter.removeBondedDevices()
+        time.sleep(2) #wait for bonded devices to be deleted
+        bleAdapter.setDiscoveryFilter(scan_filter)
+        bleAdapter.startDiscovery(discoveryEventCb)
+        mainloop.run()
+        bleAdapter.stopDiscovery()
 
-    agent = securityAgent.createSecurityAgent("NoInputNoOutput", agent)
-    runTest.reconnectWhileNotBonded()
+        agent = securityAgent.createSecurityAgent("NoInputNoOutput", agent)
+        runTest.reconnectWhileNotBonded()
 
-    time.sleep(2)
-    runTest.printTestsSummary()
+        time.sleep(2)
+        runTest.printTestsSummary()
+
+        agent = teardown_test(agent)
 
 
 def errorConnectCb():

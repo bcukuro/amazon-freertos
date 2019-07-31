@@ -384,4 +384,52 @@ void vApplicationIPNetworkEventHook( eIPCallbackEvent_t eNetworkEvent )
 
         return status;
     }
+
+    BTStatus_t bleStackDeInit( void )
+    {
+        /* Initialize BLE */
+        esp_err_t xRet = ESP_OK;
+        BTStatus_t status = eBTStatusFail;
+
+        configPRINTF( ( "DeInitializing BLE stack.\n" ) );
+
+        if( xRet == ESP_OK )
+        {
+            xRet = esp_bluedroid_disable();
+        }
+
+        if( xRet == ESP_OK )
+        {
+            xRet = esp_bluedroid_deinit();
+        }
+        else
+        {
+            configPRINTF( ( "Failed to disable bluedroid stack, err = %d.\n", xRet ) );
+        }
+
+        if( xRet == ESP_OK )
+        {
+            xRet = esp_bt_controller_disable( );
+        }
+        else
+        {
+            configPRINTF( ( "Failed to deinitialize bluedroid stack, err = %d.\n", xRet ) );
+        }
+
+        if( xRet == ESP_OK )
+        {
+            xRet = esp_bt_controller_deinit( );
+        }
+        else
+        {
+            configPRINTF( ( "Failed to disable bt controller, err = %d.\n", xRet ) );
+        }
+
+        if( xRet == ESP_OK )
+        {
+            status = eBTStatusSuccess;
+        }
+
+        return status;
+    }
 #endif /* if CONFIG_NIMBLE_ENABLED == 1 */

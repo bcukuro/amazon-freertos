@@ -83,6 +83,17 @@ void TEST_NotifyTestStart()
     vTaskDelay( pdMS_TO_TICKS( 5000UL ) );
     TEST_SubmitResult( "---------STARTING TESTS---------\n" );
 }
+
+/*-----------------------------------------------------------*/
+
+void TEST_NotifyNextTestStart( int test_number, int total_tests )
+{
+    char buffer[100];
+    vTaskDelay( pdMS_TO_TICKS( 1000UL ) );
+    sprintf( buffer, "------STARTING TEST [%i/%i]------\n", test_number, total_tests );
+    TEST_SubmitResult( buffer );
+}
+
 /*-----------------------------------------------------------*/
 
 void TEST_NotifyTestFinished()

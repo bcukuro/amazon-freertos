@@ -1,5 +1,5 @@
 /*
- * Amazon FreeRTOS V201906.00 Major
+ * Amazon FreeRTOS BLE HAL V1.0.0
  * Copyright (C) 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,23 +24,30 @@
  */
 
 /**
- * @file aws_test_framework.h
- * @brief Header file for test framework.
+ * @file aws_test_ble_stress_test.c
+ * @brief Tests for ble.
  */
 
-#ifndef _AWS_TEST_FRAMEWORK_H_
-#define _AWS_TEST_FRAMEWORK_H_
+#include "iot_test_ble_hal_kpi.h"
 
-void TEST_CacheResult( char cResult );
+/*-----------------------------------------------------------*/
 
-void TEST_SubmitResultBuffer( void );
+TEST_GROUP( Full_BLE_KPI_Test );
 
-void TEST_NotifyTestStart( void );
+/*-----------------------------------------------------------*/
 
-void TEST_NotifyNextTestStart( int test_number, int total_tests );
+TEST_SETUP( Full_BLE_KPI_Test )
+{
+}
 
-void TEST_NotifyTestFinished( void );
+/*-----------------------------------------------------------*/
 
-void TEST_SubmitResult( const char * pcResult );
+TEST_TEAR_DOWN( Full_BLE_KPI_Test )
+{
+}
 
-#endif /* _AWS_TEST_FRAMEWORK_H_ */
+/*-----------------------------------------------------------*/
+
+TEST_GROUP_RUNNER( Full_BLE_KPI_Test )
+{
+}

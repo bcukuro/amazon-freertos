@@ -183,7 +183,11 @@ static void RunTests( void )
 
     #if ( testrunnerFULL_BLE_KPI_TEST_ENABLED == 1 )
         RUN_TEST_GROUP( Full_BLE_KPI_Test );
-    #endif    
+    #endif
+
+    #if ( testrunnerFULL_BLE_INTEGRATION_TEST_ENABLED == 1 )
+        RUN_TEST_GROUP( Full_BLE_Integration_Test );
+    #endif
 
     #if ( testrunnerFULL_BLE_END_TO_END_TEST_ENABLED == 1 )
         RUN_TEST_GROUP( Full_BLE_END_TO_END_MQTT );

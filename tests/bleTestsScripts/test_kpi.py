@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import test_common
-import startTests
+import startTests_kpi as startTests
 
 if __name__ == '__main__':
 

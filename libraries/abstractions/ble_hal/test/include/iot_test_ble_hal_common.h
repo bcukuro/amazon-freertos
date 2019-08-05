@@ -164,6 +164,10 @@ typedef struct
 #define QUEUE_LENGTH                          20
 #define ITEM_SIZE                             sizeof( void * )
 
+static const uint32_t bletestWAIT_MODE1_LEVEL2_QUERY = 10000; /* Wait 10s max */
+static const uint32_t BLE_TESTS_WAIT = 60000;                 /* Wait 60s max */
+static const uint32_t BLE_TESTS_SHORT_WAIT = 4000;            /* Wait 4s max */
+
 typedef enum
 {
     eBLEHALEventServerRegisteredCb = 0,
@@ -357,5 +361,13 @@ BTGattServerInterface_t * pxGattServerInterface;
 uint16_t usBLEConnId;
 
 BTStatus_t bleStackInit( void );
+
+extern void pushToQueue( IotLink_t * pEventList );
+
+extern BTStatus_t prvWaitEventFromQueue( BLEHALEventsTypes_t xEventName,
+                                         int32_t lhandle,
+                                         void * pxMessage,
+                                         size_t xMessageLength,
+                                         uint32_t timeoutMs );
 
 #endif /* _IOT_TEST_BLE_HAL_COMMON_H */

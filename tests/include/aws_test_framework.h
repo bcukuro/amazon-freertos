@@ -37,8 +37,6 @@ void TEST_SubmitResultBuffer( void );
 
 void TEST_NotifyTestStart( void );
 
-void TEST_NotifyNextTestStart( int test_number, int total_tests );
-
 void TEST_NotifyTestFinished( void );
 
 void TEST_SubmitResult( const char * pcResult );

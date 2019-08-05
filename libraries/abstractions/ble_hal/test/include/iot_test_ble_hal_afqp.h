@@ -263,19 +263,9 @@ IotBleConnectionParam_t xConnectionParamA =
     .timeout     = 400
 };
 
-const uint32_t bletestWAIT_MODE1_LEVEL2_QUERY = 10000; /* Wait 10s max */
-const uint32_t BLE_TESTS_WAIT = 60000;                 /* Wait 60s max */
-const uint32_t BLE_TESTS_SHORT_WAIT = 4000;            /* Wait 4s max */
-
-void pushToQueue( IotLink_t * pEventList );
 static void prvSetGetProperty( BTProperty_t * pxProperty,
                                bool bIsSet );
 static void prvStartAdvertisement( void );
-static BTStatus_t prvWaitEventFromQueue( BLEHALEventsTypes_t xEventName,
-                                         int32_t lhandle,
-                                         void * pxMessage,
-                                         size_t xMessageLength,
-                                         uint32_t timeoutMs );
 static void prvWriteCheckAndResponse( bletestAttSrvB_t xAttribute,
                                       bool bNeedRsp,
                                       bool IsPrep,

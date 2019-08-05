@@ -33,4 +33,6 @@
 
 #include "iot_test_ble_hal_common.h"
 
+static void prvDeviceStateChangedCb( BTState_t xState );
+
 #endif /* _IOT_TEST_BLE_HAL_STRESS_TEST_H_ */

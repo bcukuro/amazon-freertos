@@ -151,5 +151,5 @@ TEST( Full_BLE_Stress_Test, BLE_Simple_Connect )
 
 TEST( Full_BLE_Stress_Test, BLE_Simple_Connect_Teardown )
 {
-    
+
 }

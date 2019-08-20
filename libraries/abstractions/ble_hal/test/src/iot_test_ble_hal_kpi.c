@@ -86,26 +86,9 @@ TEST( Full_BLE_KPI_Test, BLE_KPI_ReConnect )
 TEST( Full_BLE_KPI_Test, BLE_KPI_Teardown )
 {
     BTStatus_t xStatus = eBTStatusSuccess;
-    BLETESTInitDeinitCallback_t xInitDeinitCb;
 
-    xStatus = g_pxGattServerInterface->pxUnregisterServer( g_ucBLEServerIf );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-
-    xStatus = prvWaitEventFromQueue( eBLEHALEventRegisterUnregisterGattServerCb, NO_HANDLE, ( void * ) &xInitDeinitCb, sizeof( BLETESTInitDeinitCallback_t ), BLE_TESTS_WAIT );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xInitDeinitCb.xStatus );
-
-
-    xStatus = g_pxBTLeAdapterInterface->pxUnregisterBleApp( g_ucBLEAdapterIf );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-
-    xStatus = g_pxBTInterface->pxDisable( 0 );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-
-    xStatus = prvWaitEventFromQueue( eBLEHALEventEnableDisableCb, NO_HANDLE, ( void * ) &xInitDeinitCb, sizeof( BLETESTInitDeinitCallback_t ), BLE_TESTS_WAIT );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-    TEST_ASSERT_EQUAL( eBTstateOff, xInitDeinitCb.xBLEState );
-
+    prvBTUnregister();
+    prvBLEEnable( false );
 
     xStatus = g_pxBTInterface->pxBtManagerCleanup();
     TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );

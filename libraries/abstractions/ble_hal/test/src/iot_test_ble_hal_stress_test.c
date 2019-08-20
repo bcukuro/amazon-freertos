@@ -62,11 +62,11 @@ TEST_GROUP_RUNNER( Full_BLE_Stress_Test )
     /* Initializations that need to be done once for all the tests. */
     RUN_TEST_CASE( Full_BLE, BLE_Setup );
 
-    for (uint32_t init_loop = 0; init_loop < INIT_DEINIT_NUMBER_STRESS_TEST; init_loop++)
+    for( uint32_t init_loop = 0; init_loop < INIT_DEINIT_NUMBER_STRESS_TEST; init_loop++ )
     {
         RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Stack_Init );
 
-        for (uint32_t enable_loop = 0; enable_loop < ENABLE_DISABLE_NUMBER_STRESS_TEST; enable_loop++)
+        for( uint32_t enable_loop = 0; enable_loop < ENABLE_DISABLE_NUMBER_STRESS_TEST; enable_loop++ )
         {
             RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Stack_Enable );
 
@@ -77,7 +77,7 @@ TEST_GROUP_RUNNER( Full_BLE_Stress_Test )
             RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Service_Restart );
             RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Service_Delete );
 
-            RUN_TEST_CASE( Full_BLE, BLE_Advertising_SetProperties ); /*@TOTO, incomplete */
+            RUN_TEST_CASE( Full_BLE, BLE_Advertising_SetProperties );       /*@TOTO, incomplete */
             RUN_TEST_CASE( Full_BLE, BLE_Connection_RemoveAllBonds );
             RUN_TEST_CASE( Full_BLE, BLE_Advertising_SetAvertisementData ); /*@TOTO, incomplete */
 
@@ -100,18 +100,19 @@ TEST( Full_BLE_Stress_Test, BLE_Stack_Init )
 }
 
 TEST( Full_BLE_Stress_Test, BLE_Stack_Enable )
-{  
-    prvBLEEnable(true);
+{
+    prvBLEEnable( true );
 }
 
 TEST( Full_BLE_Stress_Test, BLE_Stack_Disable )
 {
-    prvBLEEnable(false);
+    prvBLEEnable( false );
 }
 
 TEST( Full_BLE_Stress_Test, BLE_Stack_Deinit )
 {
     BTStatus_t xStatus = eBTStatusSuccess;
+
     xStatus = g_pxBTInterface->pxBtManagerCleanup();
     TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
 }
@@ -124,42 +125,13 @@ TEST( Full_BLE_Stress_Test, BLE_Service_Delete )
 
 TEST( Full_BLE_Stress_Test, BLE_Teardown )
 {
-    BTStatus_t xStatus = eBTStatusSuccess;
-    BLETESTInitDeinitCallback_t xInitDeinitCb;
-
-    xStatus = g_pxGattServerInterface->pxUnregisterServer( g_ucBLEServerIf );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-
-    xStatus = prvWaitEventFromQueue( eBLEHALEventRegisterUnregisterGattServerCb, NO_HANDLE, ( void * ) &xInitDeinitCb, sizeof( BLETESTInitDeinitCallback_t ), BLE_TESTS_WAIT );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xInitDeinitCb.xStatus );
-
-
-    xStatus = g_pxBTLeAdapterInterface->pxUnregisterBleApp( g_ucBLEAdapterIf );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
+    prvBTUnregister();
 }
 
 TEST( Full_BLE_Stress_Test, BLE_Service_Create )
 {
-    /* Create service A */
-    prvCreateService( &g_xSrvcA );
-    prvCreateCharacteristic( &g_xSrvcA, bletestATTR_SRVCA_CHAR_A );
-
-    /* Create service B */
-    prvCreateService( &g_xSrvcB );
-    prvCreateCharacteristic( &g_xSrvcB, bletestATTR_SRVCB_CHAR_A );
-    prvCreateCharacteristic( &g_xSrvcB, bletestATTR_SRVCB_CHAR_B );
-    prvCreateCharacteristic( &g_xSrvcB, bletestATTR_SRVCB_CHAR_C );
-    prvCreateCharacteristic( &g_xSrvcB, bletestATTR_SRVCB_CHAR_D );
-    prvCreateCharacteristic( &g_xSrvcB, bletestATTR_SRVCB_CHAR_E );
-    prvCreateCharacteristicDescriptor( &g_xSrvcB, bletestATTR_SRVCB_CCCD_E );
-    prvCreateCharacteristic( &g_xSrvcB, bletestATTR_SRVCB_CHAR_F );
-    prvCreateCharacteristicDescriptor( &g_xSrvcB, bletestATTR_SRVCB_CCCD_F );
-    prvCreateCharacteristicDescriptor( &g_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_A );
-    prvCreateCharacteristicDescriptor( &g_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_B );
-    prvCreateCharacteristicDescriptor( &g_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_C );
-    prvCreateCharacteristicDescriptor( &g_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_D );
-
+    prvCreateServiceA();
+    prvCreateServiceB();
 }
 
 TEST( Full_BLE_Stress_Test, BLE_Service_Restart )
@@ -186,27 +158,7 @@ void prvRestartService( BTService_t * xRefSrvc )
 
     for( loop = 0; loop < RESTART_NUMBER_STRESS_TEST; loop++ )
     {
-        BTStatus_t xStatus = eBTStatusSuccess;
-        BLETESTServiceCallback_t xStopDeleteServiceCb;
         prvStartService( xRefSrvc );
-        xStatus = g_pxGattServerInterface->pxStopService( g_ucBLEServerIf, xRefSrvc->pusHandlesBuffer[ 0 ] );
-        TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-
-        xStatus = prvWaitEventFromQueue( eBLEHALEventServiceStoppedCb, xRefSrvc->pusHandlesBuffer[ 0 ], ( void * ) &xStopDeleteServiceCb, sizeof( BLETESTServiceCallback_t ), BLE_TESTS_WAIT );
-        TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-        TEST_ASSERT_EQUAL( eBTStatusSuccess, xStopDeleteServiceCb.xStatus );
+        prvStopService( xRefSrvc );
     }
-}
-
-void prvDeleteService( BTService_t * xRefSrvc )
-{
-    BTStatus_t xStatus = eBTStatusSuccess;
-    BLETESTServiceCallback_t xStopDeleteServiceCb;
-
-    xStatus = g_pxGattServerInterface->pxDeleteService( g_ucBLEServerIf, xRefSrvc->pusHandlesBuffer[ 0 ] );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-
-    xStatus = prvWaitEventFromQueue( eBLEHALEventServiceDeletedCb, xRefSrvc->pusHandlesBuffer[ 0 ], ( void * ) &xStopDeleteServiceCb, sizeof( BLETESTServiceCallback_t ), BLE_TESTS_WAIT );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStopDeleteServiceCb.xStatus );
 }

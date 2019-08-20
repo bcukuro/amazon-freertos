@@ -40,16 +40,6 @@
 
     void prvGAPInitEnableTwice( void );
 
-    void prvBLEGAPInit( void );
-
-    void prvBLEGATTInit( void );
-
-    void prvSetAdvData( void );
-
-    void prvStopAdvertisement( void );
-
-    void prvSetAdvProperty( void );
-
     void prvGetResult( bletestAttSrvB_t xAttribute,
                        bool IsPrep,
                        uint16_t usOffset );

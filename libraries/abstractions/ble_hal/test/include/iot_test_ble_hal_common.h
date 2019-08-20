@@ -470,17 +470,25 @@
     void prvStartStopAdvCheck( bool start );
     BTStatus_t bleStackInit( void );
     void prvBLESetUp( void );
-    void prvBLEManagerInit(void);
+    void prvBLEManagerInit( void );
     void prvBLEEnable( bool bEnable );
     void prvStartService( BTService_t * xRefSrvc );
-    void prvCreateService( BTService_t * xRefSrvc );
+    /* void prvCreateService( BTService_t * xRefSrvc ); */
+    void prvCreateServiceA( void );
+    void prvCreateServiceB( void );
     void prvWaitConnection( bool bConnected );
-    void prvStopAndDeleteService( BTService_t * xRefSrvc );
-    void prvCreateCharacteristic( BTService_t * xSrvc,
-                                  int xAttribute );
-    void prvCreateCharacteristicDescriptor( BTService_t * xSrvc,
-                                            int xAttribute );
+    void prvStopService( BTService_t * xRefSrvc );
+    void prvDeleteService( BTService_t * xRefSrvc );
+    /* void prvCreateCharacteristic( BTService_t * xSrvc, */
+    /*                               int xAttribute ); */
+    /* void prvCreateCharacteristicDescriptor( BTService_t * xSrvc, */
+    /*                                         int xAttribute ); */
     void checkNotificationIndication( bletestAttSrvB_t xAttribute,
                                       bool enable );
+    void prvBTUnregister( void );
+    void prvBLEGAPInit( void );
+    void prvBLEGATTInit( void );
+    void prvSetAdvProperty( void );
+    void prvSetAdvData( void );
 
 #endif /* _IOT_TEST_BLE_HAL_COMMON_H */

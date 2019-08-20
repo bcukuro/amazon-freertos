@@ -68,6 +68,8 @@ TEST_GROUP_RUNNER( Full_BLE_Stress_Test )
 
         for( uint32_t enable_loop = 0; enable_loop < ENABLE_DISABLE_NUMBER_STRESS_TEST; enable_loop++ )
         {
+            /*TODO: add some randomness to catch timing issues */
+
             RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Stack_Enable );
 
             RUN_TEST_CASE( Full_BLE, BLE_Initialize_BLE_GAP );

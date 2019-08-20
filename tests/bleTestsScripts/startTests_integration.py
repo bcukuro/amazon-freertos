@@ -72,11 +72,13 @@ def main():
     scan_filter.update({ "UUIDs": [runTest.DUT_UUID]})
 
     # default DUT_name: nimble(without set_property)
+    # TODO: check DUT with MAC address instead of name.
     runTest.DUT_NAME = "nimb"
     bleAdapter.setDiscoveryFilter(scan_filter)
 
 
     # Advertisement interval consistent after reset test
+    # TODO: the first time uses different callback to get/check test device information. we can choose to use the second time and third time KPI to compare.
     # First time connection
     isTestSuccessFull = True
     bleAdapter.startDiscovery(discoveryEventCb)

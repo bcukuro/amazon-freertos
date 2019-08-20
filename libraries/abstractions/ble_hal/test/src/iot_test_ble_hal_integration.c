@@ -30,7 +30,7 @@
 
 
 #include <time.h>
-#include <unistd.h>
+/* #include <unistd.h> */
 
 
 #include "iot_test_ble_hal_integration.h"
@@ -97,7 +97,6 @@ TEST( Full_BLE_Integration_Test, BLE_Advertise_Without_Properties )
     prvBLEGATTInit();
     prvSetAdvData();
     prvStartAdvertisement();
-    /* sleep( ADV_RECV_TIMEOUT ); */
     prvWaitConnection( true );
 }
 
@@ -131,6 +130,11 @@ TEST( Full_BLE_Integration_Test, BLE_Enable_Disable_BT_Module )
 }
 
 
+/* Crash if calling pxEnable twice (MTK)                                        */
+/* (1)init -> (2)enable -> (3)deinit -> (4)init -> (5)enable                    */
+/* There are 2 issues with this sequence:                                       */
+/* (4)init reset stack state to disabled even though it's still enabled         */
+/* (5)enable trigger pxEnable again while MTK stack is enabled -> mtk crashed   */
 TEST( Full_BLE_Integration_Test, BLE_Init_Enable_Twice )
 {
     prvBLESetUp();
@@ -144,10 +148,6 @@ TEST( Full_BLE_Integration_Test, BLE_Advertise_Interval_Consistent_After_BT_Rese
 
     BTStatus_t xStatus = eBTStatusSuccess;
     BLETESTInitDeinitCallback_t xInitDeinitCb;
-
-    /* / * Get BT interface * / */
-    /* g_pxBTInterface = ( BTInterface_t * ) BTGetBluetoothInterface(); */
-    /* TEST_ASSERT_NOT_EQUAL( NULL, g_pxBTInterface ); */
 
     xStatus = g_pxBTInterface->pxBtManagerCleanup();
     TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );

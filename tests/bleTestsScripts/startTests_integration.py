@@ -155,13 +155,13 @@ def main():
     bleAdapter.setDiscoveryFilter(scan_filter)
 
     # Advertisement interval consistent after reset test
-    # TODO: the first time uses different callback to get/check test device information. we can choose to use the second time and third time KPI to compare.
+    # The first time uses different callback to get/check test device information. Use the second time and third time KPI to compare.
     # First time connection
     isTestSuccessFull = True
     bleAdapter.startDiscovery(runTest.discoveryEventCb)
-    firstStartScan = time.time()
+    # firstStartScan = time.time()
     runTest.mainloop.run()
-    firstKPI = time.time() - firstStartScan
+    # firstKPI = time.time() - firstStartScan
     runTest.submitTestResult(isTestSuccessFull, runTest.advertisement)
     bleAdapter.stopDiscovery()
 
@@ -181,14 +181,26 @@ def main():
     isConnectSuccessFull = bleAdapter.connect(testDevice)
     isTestSuccessFull &= isConnectSuccessFull
     runTest.submitTestResult(isTestSuccessFull, runTest.reConnection)
+    time.sleep(2) #wait for connection parameters update
+    # Second time disconnect
+    isTestSuccessFull &= bleAdapter.disconnect()
 
-    bleAdapter.gatt.updateLocalAttributeTable()
-    print firstKPI
-    print secondKPI
-    if secondKPI > firstKPI * 10:
+    #Third time connection
+    bleAdapter.startDiscovery(runTest.discoveryStartedCb)#wait for DUT to start advertising
+    thirdStartScan = time.time()
+    runTest.mainloop.run()
+    thirdKPI = time.time() - thirdStartScan
+    bleAdapter.stopDiscovery()
+    isConnectSuccessFull = bleAdapter.connect(testDevice)
+    isTestSuccessFull &= isConnectSuccessFull
+    runTest.submitTestResult(isTestSuccessFull, runTest.reConnection)
+
+    if thirdKPI > secondKPI * 10:
         isTestSuccessFull &= false
+    # write result back to server
+    isTestSuccessFull = runTest.discoverPrimaryServices()
+    bleAdapter.gatt.updateLocalAttributeTable()
 
-    # write result back to peripheral
     isTestSuccessFull &= runTest.writeResultWithoutResponse(chr(isTestSuccessFull + 48))
     runTest.submitTestResult(isTestSuccessFull, runTest.writeWithoutResponse)
 
@@ -200,9 +212,7 @@ def main():
     isTestSuccessFull = runTest.isNotificationDeclinedSuccessFull
     runTest.submitTestResult(isTestSuccessFull, runTest.notification)
 
-    # unsubscribe
     isTestSuccessFull = bleAdapter.subscribeForNotification(runTest.DUT_NOTIFY_CHAR_UUID, subscribe = False) #unsubscribe
-    isTestSuccessFull = True
     runTest.submitTestResult(isTestSuccessFull, runTest.removeNotification)
 
     isTestSuccessFull &= bleAdapter.disconnect()
@@ -210,4 +220,5 @@ def main():
     runTest.DUT_NAME = DUT_ORIGINAL_NAME
 
     time.sleep(2) #wait for connection parameters update
+    runTest.submitTestResult(isTestSuccessFull, runTest.disconnect)
     runTest.printTestsSummary()

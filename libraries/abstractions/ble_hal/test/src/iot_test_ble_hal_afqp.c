@@ -356,13 +356,13 @@ void prvExecuteWriteCheckAndResponse( bletestAttSrvB_t xAttribute,
 
     /* Wait write event on char A*/
     printf("\n prvExecuteWriteCheckAndResponse: wait for eBLEHALEventWriteAttrCb\n");
-    xStatus = prvWaitEventFromQueue( eBLEHALEventRequestExecWriteCb, NO_HANDLE, ( void * ) &xWriteEvent, sizeof( BLETESTwriteAttrCallback_t ), BLE_TESTS_WAIT );
+    xStatus = IotTestBleHal_WaitEventFromQueue( eBLEHALEventRequestExecWriteCb, NO_HANDLE, ( void * ) &xWriteEvent, sizeof( BLETESTwriteAttrCallback_t ), BLE_TESTS_WAIT );
     printf("\n prvExecuteWriteCheckAndResponse: received event (connid=%d, ulTransId=%d) \n", xWriteEvent.usConnId, xWriteEvent.ulTransId);
 
     TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
 
-    TEST_ASSERT_EQUAL( g_usBLEConnId, xWriteEvent.usConnId );
-    TEST_ASSERT_EQUAL( 0, memcmp( &xWriteEvent.xBda, &g_xAddressConnectedDevice, sizeof( BTBdaddr_t ) ) );
+    TEST_ASSERT_EQUAL( _usBLEConnId, xWriteEvent.usConnId );
+    TEST_ASSERT_EQUAL( 0, memcmp( &xWriteEvent.xBda, &_xAddressConnectedDevice, sizeof( BTBdaddr_t ) ) );
 
     if( bNeedRsp == true )
     {
@@ -371,10 +371,10 @@ void prvExecuteWriteCheckAndResponse( bletestAttSrvB_t xAttribute,
         // ucRespBuffer[ xAttribute ].xLength = xWriteEvent.xLength;
         // memcpy( ucRespBuffer[ xAttribute ].ucBuffer, xWriteEvent.ucValue, xWriteEvent.xLength );
         // xGattResponse.xAttrValue.pucValue = ucRespBuffer[ xAttribute ].ucBuffer;
-        xStatus = g_pxGattServerInterface->pxSendResponse( xWriteEvent.usConnId, xWriteEvent.ulTransId, eBTStatusSuccess, &xGattResponse );
+        xStatus = _pxGattServerInterface->pxSendResponse( xWriteEvent.usConnId, xWriteEvent.ulTransId, eBTStatusSuccess, &xGattResponse );
         TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
 
-        xStatus = prvWaitEventFromQueue( eBLEHALEventConfimCb, usHandlesBufferB[ xAttribute ], ( void * ) &xConfirmEvent, sizeof( BLETESTconfirmCallback_t ), BLE_TESTS_WAIT );
+        xStatus = IotTestBleHal_WaitEventFromQueue( eBLEHALEventConfimCb, usHandlesBufferB[ xAttribute ], ( void * ) &xConfirmEvent, sizeof( BLETESTconfirmCallback_t ), BLE_TESTS_WAIT );
         TEST_ASSERT_EQUAL( eBTStatusSuccess, xConfirmEvent.xStatus );
         // TEST_ASSERT_EQUAL( usHandlesBufferB[ xAttribute ], xConfirmEvent.usAttrHandle );
     }
@@ -406,7 +406,7 @@ BLETESTwriteAttrCallback_t IotTestBleHal_WriteReceive( bletestAttSrvB_t xAttribu
     /* Wait write event on char A*/
     xStatus = IotTestBleHal_WaitEventFromQueue( eBLEHALEventWriteAttrCb, usHandlesBufferB[ xAttribute ], ( void * ) &xWriteEvent, sizeof( BLETESTwriteAttrCallback_t ), BLE_TESTS_WAIT );
     TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-    TEST_ASSERT_EQUAL( IsPrep, xWriteEvent.bIsPrep );
+    // TEST_ASSERT_EQUAL( IsPrep, xWriteEvent.bIsPrep );
     TEST_ASSERT_EQUAL( bNeedRsp, xWriteEvent.bNeedRsp );
     TEST_ASSERT_EQUAL( usHandlesBufferB[ xAttribute ], xWriteEvent.usAttrHandle );
     TEST_ASSERT_EQUAL( _usBLEConnId, xWriteEvent.usConnId );
@@ -744,18 +744,3 @@ TEST( Full_BLE, BLE_DeInitialize )
     TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
 }
 
-            xdvParamCallback->xStatus = eBTStatusFail;
-    printf("\nprvAdvStatusCb(%d,%d,%d) serverIf=%d, status=%d\n", xStatus,ulServerIf,bStart,g_ucBLEServerIf,xdvParamCallback->xStatus);
-    // BT_LOGI("\n%s\n", __FUNCTION__);
-    printf("\n prvRequestWriteCb handle=%x\n", usAttrHandle);
-        printf("\npushToQueue(0x%x)!!!\n", pxWriteAttrCallback->xEvent.xEventTypes);
-    } else {
-        printf("\nMalloc failed!!!\n");
-        printf("\nEventQueue:eventTypes=%d, handle=0x%x (%d,0x%x)\n", pEventIndex->xEventTypes, pEventIndex->lHandle, xEventName, (uint32_t)lhandle);
-    printf("\nprvWaitEventFromQueue(event=%d,handle=0x%x)\n", xEventName, (uint32_t)lhandle);
-        printf("\nfound event\n");
-    } else {
-        printf("\nnot found event: timeout\n");
-
-    } else {
-        printf("\nMalloc failed!!!\n");

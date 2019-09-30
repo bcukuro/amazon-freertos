@@ -157,15 +157,15 @@ int app_main( void )
                      ucDNSServerAddress,
                      ucMACAddress );
 
-    if( SYSTEM_Init() == pdPASS )
-    {
-        /* Connect to the wifi before running the tests. */
-        prvWifiConnect();
+    // if( SYSTEM_Init() == pdPASS )
+    // {
+    //     /* Connect to the wifi before running the tests. */
+    //     prvWifiConnect();
 
-        /* A simple example to demonstrate key and certificate provisioning in
-         * microcontroller flash using PKCS#11 interface. This should be replaced
-         * by production ready key provisioning mechanism. */
-        vDevModeKeyProvisioning();
+    //     /* A simple example to demonstrate key and certificate provisioning in
+    //      * microcontroller flash using PKCS#11 interface. This should be replaced
+    //      * by production ready key provisioning mechanism. */
+    //     vDevModeKeyProvisioning();
 
         /* Create the task to run unit tests. */
         xTaskCreate( TEST_RUNNER_RunTests_task,
@@ -174,7 +174,7 @@ int app_main( void )
                      NULL,
                      tskIDLE_PRIORITY + 5,
                      NULL );
-    }
+    // }
 
     /* Start the scheduler.  Initialization that requires the OS to be running,
      * including the WiFi initialization, is performed in the RTOS daemon task

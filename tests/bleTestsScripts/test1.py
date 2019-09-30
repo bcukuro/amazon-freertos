@@ -61,4 +61,5 @@ if __name__ == '__main__':
 
     #startBackGroundEvents = threading.Thread(target=backGroundEvents)
     #startBackGroundEvents.start()
+    print("PTTTTTTTTTTTTTT")
     startTests.main()

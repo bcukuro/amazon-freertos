@@ -333,6 +333,7 @@ class runTest:
 
     @staticmethod
     def readWriteSimpleConnection():
+        print("readWriteSimpleConnection")
         isTestSuccessfull = runTest._readWriteChecks(runTest.DUT_OPEN_CHAR_UUID, runTest.DUT_OPEN_DESCR_UUID)
 
         isPaired = bleAdapter.isPaired()

@@ -34,6 +34,7 @@ from bleAdapter import bleAdapter
 
 def main():
     scan_filter = dict()
+    print("Zhang Shijing!!!!!")
 
     bleAdapter.init()
     agent = securityAgent.createSecurityAgent()
@@ -70,11 +71,12 @@ def main():
     bleAdapter.gatt.updateLocalAttributeTable()
     isTestSuccessFull = runTest.checkUUIDs(bleAdapter.gatt)
     runTest.submitTestResult(isTestSuccessFull, runTest.checkUUIDs)
+    print("Zhang Shijing 2!!!!!")
 
     #Check attribute table properties
     isTestSuccessFull = runTest.checkProperties(bleAdapter.gatt)
     runTest.submitTestResult(isTestSuccessFull, runTest.checkProperties)
-
+    print("Zhang Shijing 333!!!!!")
     #Check read/write, simple connection
     isTestSuccessFull = runTest.readWriteSimpleConnection()
     runTest.submitTestResult(isTestSuccessFull, runTest.readWriteSimpleConnection)

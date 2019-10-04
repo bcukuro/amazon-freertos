@@ -308,7 +308,16 @@ class runTest:
 
     @staticmethod
     def _readWriteChecks(charUUID, descrUUID):
-        bleAdapter.writeCharacteristic(charUUID, charUUID)
+        ENABLE_TC_WRITE_LONG = 1
+        if (ENABLE_TC_WRITE_LONG == 1):
+            #enable long write test
+            long_value="1" * (runTest.MTU_SIZE + 10) #TODO: get correct mtu size, assume 200 for now
+            bleAdapter.writeCharacteristic(charUUID, long_value)
+
+        ENABLE_TC_WRITE_NORMAL = 1
+        if (ENABLE_TC_WRITE_NORMAL == 1):
+            bleAdapter.writeCharacteristic(charUUID, charUUID)
+
         bleAdapter.writeDescriptor(descrUUID, descrUUID)
 
         (isTestSuccessfull, charRead) = bleAdapter.readCharacteristic(charUUID)
@@ -396,6 +405,8 @@ class runTest:
     @staticmethod
     def advertisement(testDevice, DUT_UUID=None):
         if (DUT_UUID == None): DUT_UUID = runTest.DUT_UUID_128
+
+        print("Received adv packet")
 
         if (bleAdapter.getPropertie(testDevice, "Address") == None):
             print("Advertisement test: Waiting for Address")

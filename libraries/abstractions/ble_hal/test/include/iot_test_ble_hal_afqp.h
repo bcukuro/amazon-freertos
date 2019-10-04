@@ -33,6 +33,8 @@
 
 #include "iot_test_ble_hal_common.h"
 
+#define ENABLE_TC_WRITE_LONG (1)
+
 void prvWriteCheckAndResponse( bletestAttSrvB_t xAttribute,
                                bool bNeedRsp,
                                bool IsPrep,

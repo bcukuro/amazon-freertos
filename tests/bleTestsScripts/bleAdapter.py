@@ -81,6 +81,7 @@ class bleAdapter:
 
     @staticmethod
     def startDiscovery(discoveryEventCb):
+        print("Start discovery ...")
         bleAdapter.discoveryEventCb = discoveryEventCb
         bleAdapter.adapter.StartDiscovery()
 

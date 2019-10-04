@@ -49,6 +49,7 @@ uint16_t usHandlesBufferB[ bletestATTR_SRVCB_NUMBER ];
 
 uint8_t ucCbPropertyBuffer[ bletestsMAX_PROPERTY_SIZE ];
 uint32_t usCbConnInterval;
+uint16_t _bletestsMTU_SIZE = bletestsMTU_SIZE1;
 
 /* service A */
 
@@ -317,7 +318,7 @@ BTGattServerCallbacks_t _xBTGattServerCb =
     .pxResponseConfirmationCb = prvResponseConfirmationCb,
     .pxIndicationSentCb       = prvIndicationSentCb,
     .pxCongestionCb           = NULL,
-    .pxMtuChangedCb           = NULL
+    .pxMtuChangedCb           = prvMtuChangedCb
 };
 
 void IotTestBleHal_BLESetUp()
@@ -1477,6 +1478,8 @@ BTStatus_t IotTestBleHal_WaitEventFromQueue( BLEHALEventsTypes_t xEventName,
     BTStatus_t xStatus = eBTStatusSuccess;
     void * pvPtr = NULL;
 
+    IDT_DEBUG("WaitEvent: %d, handle=0x%x\n", xEventName, (uint32_t)lhandle);
+
     pvPtr = checkQueueForEvent( xEventName, lhandle );
 
     /* If event is not waiting then wait for it. */
@@ -1504,8 +1507,11 @@ BTStatus_t IotTestBleHal_WaitEventFromQueue( BLEHALEventsTypes_t xEventName,
 
     if( xStatus == eBTStatusSuccess )
     {
+        IDT_DEBUG("Event Received: %d, handle=0x%x\n", xEventName, (uint32_t)lhandle);
         memcpy( pxMessage, pvPtr, xMessageLength );
         IotTest_Free( pvPtr );
+    } else {
+        IDT_DEBUG("WaitEvent TIMEOUT!!! %d, handle=0x%x\n", xEventName, (uint32_t)lhandle);
     }
 
     return xStatus;
@@ -1525,6 +1531,12 @@ void prvIndicationSentCb( uint16_t usConnId,
 
         pushToQueue( &pxIndicateCallback->xEvent.eventList );
     }
+}
+
+ 
+void prvMtuChangedCb(uint16_t usConnId, uint16_t usMtu) {
+    IDT_DEBUG("prvMtuChangedCb conn=%d, mtu=%d", usConnId, usMtu);
+    _bletestsMTU_SIZE = usMtu;
 }
 
 void prvResponseConfirmationCb( BTStatus_t xStatus,
@@ -1675,6 +1687,9 @@ void prvBondedCb( BTStatus_t xStatus,
 
 void pushToQueue( IotLink_t * pEventList )
 {
+    BLEHALEventsInternals_t * pEventIndex = IotLink_Container( BLEHALEventsInternals_t, pEventList, eventList );
+    IDT_DEBUG("pushToQueue: event=%d, handl=0x%x\n", pEventIndex->xEventTypes, (uint32_t)pEventIndex->lHandle);
+
     IotMutex_Lock( &threadSafetyMutex );
 
     IotListDouble_InsertHead( &eventQueueHead,

@@ -297,15 +297,20 @@ class bleAdapter:
         isSuccessfull = True
         try:
             if subscribe == True:
-                objInterface.StartNotify()
+                objInterface.StartNotify(reply_handler=attributeWrite, error_handler=attributeAccessError, timeout=bleAdapter.DBUS_HANDLER_GENERIC_TIMEOUT)
+
             else:
-                objInterface.StopNotify()
+                objInterface.StopNotify(reply_handler=attributeWrite, error_handler=attributeAccessError, timeout=bleAdapter.DBUS_HANDLER_GENERIC_TIMEOUT)
+
+            mainloop.run()
+            isSuccessfull = attributeAccessEvent.get()
 
         except Exception as e:
             print("BLE ADAPTER: Can't subscribe for notification: "+uuid+" error: "+str(e))
             isSuccessfull = False
 
         return isSuccessfull
+
 
     @staticmethod
     def _notificationErrorCb(uuid, notificationCb):

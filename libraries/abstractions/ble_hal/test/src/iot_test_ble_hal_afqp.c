@@ -608,19 +608,40 @@ TEST( Full_BLE, BLE_Property_WriteCharacteristic )
  */
 TEST( Full_BLE, BLE_Property_WriteLongCharacteristic )
 {
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
-                              true,
-                              true,
-                              0 );
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
-                              true,
-                              true,
-                              bletestsMTU_SIZE1 - 5 );
-    /* /TODO: check what bNeedRsp should be (false here for CY) */
-    prvExecuteWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
-                                     false );
+    BLETESTwriteAttrCallback_t xWriteEvent;
+    BTStatus_t xStatus;
 
-    /* wait for execute write */
+    xStatus = IotTestBleHal_WaitEventFromQueue( eBLEHALEventWriteAttrCb, usHandlesBufferB[ bletestATTR_SRVCB_CHAR_A ], ( void * ) &xWriteEvent, sizeof( BLETESTwriteAttrCallback_t ), BLE_TESTS_WAIT );
+    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
+    TEST_ASSERT_EQUAL( _usBLEConnId, xWriteEvent.usConnId );
+    TEST_ASSERT_EQUAL( 0, memcmp( &xWriteEvent.xBda, &_xAddressConnectedDevice, sizeof( BTBdaddr_t ) ) );
+
+    if( xWriteEvent.bIsPrep == true )
+    {
+        TEST_ASSERT_EQUAL( usHandlesBufferB[ bletestATTR_SRVCB_CHAR_A ], xWriteEvent.usAttrHandle );
+
+        if( xWriteEvent.bNeedRsp == true ) /* this flag is different depending on different stack implementation */
+        {
+            IotTestBleHal_WriteResponse( bletestATTR_SRVCB_CHAR_A, xWriteEvent, true );
+        }
+        prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
+                                  true,
+                                  true,
+                                  bletestsMTU_SIZE1 - 5 );
+        prvExecuteWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
+                                         true );
+    }
+    else
+    {
+        TEST_ASSERT_EQUAL( 0, xWriteEvent.usOffset );
+        TEST_ASSERT_EQUAL( bletests_LONG_WRITE_LEN, xWriteEvent.xLength );
+        TEST_ASSERT_EACH_EQUAL_INT8( 49, xWriteEvent.ucValue, bletestsSTRINGYFIED_UUID_SIZE);
+
+        if( xWriteEvent.bNeedRsp == true )
+        {
+            IotTestBleHal_WriteResponse( bletestATTR_SRVCB_CHAR_A, xWriteEvent, true );
+        }
+    }
 }
 
 TEST( Full_BLE, BLE_Connection_ChangeMTUsize )

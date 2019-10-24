@@ -413,13 +413,18 @@ BLETESTwriteAttrCallback_t IotTestBleHal_WriteReceive( bletestAttSrvB_t xAttribu
     TEST_ASSERT_EQUAL( usHandlesBufferB[ xAttribute ], xWriteEvent.usAttrHandle );
     TEST_ASSERT_EQUAL( _usBLEConnId, xWriteEvent.usConnId );
     TEST_ASSERT_EQUAL( 0, memcmp( &xWriteEvent.xBda, &_xAddressConnectedDevice, sizeof( BTBdaddr_t ) ) );
+    TEST_ASSERT_EQUAL( usOffset, xWriteEvent.usOffset );
 
     if( !IsPrep )                                            /* not a prepare write req */
     {
         TEST_ASSERT_EQUAL( bNeedRsp, xWriteEvent.bNeedRsp ); /* NOT check bNeedRsp for PrepareWrite because of stack differences (Cypress stack sets this flag to 0) */
         /* TODO: add check for Prepare Write Req */
-        TEST_ASSERT_EQUAL( usOffset, xWriteEvent.usOffset );
         TEST_ASSERT_EQUAL( bletestsSTRINGYFIED_UUID_SIZE, xWriteEvent.xLength );
+    }
+    else
+    {
+        TEST_ASSERT_EQUAL( bletests_LONG_WRITE_LEN - bletestsMTU_SIZE1 + 5 , xWriteEvent.xLength );
+        TEST_ASSERT_EACH_EQUAL_INT8( 49, xWriteEvent.ucValue, xWriteEvent.xLength );
     }
 
     return xWriteEvent;
@@ -615,10 +620,12 @@ TEST( Full_BLE, BLE_Property_WriteLongCharacteristic )
     TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
     TEST_ASSERT_EQUAL( _usBLEConnId, xWriteEvent.usConnId );
     TEST_ASSERT_EQUAL( 0, memcmp( &xWriteEvent.xBda, &_xAddressConnectedDevice, sizeof( BTBdaddr_t ) ) );
+    TEST_ASSERT_EQUAL( 0, xWriteEvent.usOffset );
 
     if( xWriteEvent.bIsPrep == true )
     {
         TEST_ASSERT_EQUAL( usHandlesBufferB[ bletestATTR_SRVCB_CHAR_A ], xWriteEvent.usAttrHandle );
+        TEST_ASSERT_EACH_EQUAL_INT8( 49, xWriteEvent.ucValue, bletestsSTRINGYFIED_UUID_SIZE );
 
         if( xWriteEvent.bNeedRsp == true ) /* this flag is different depending on different stack implementation */
         {
@@ -633,7 +640,6 @@ TEST( Full_BLE, BLE_Property_WriteLongCharacteristic )
     }
     else
     {
-        TEST_ASSERT_EQUAL( 0, xWriteEvent.usOffset );
         TEST_ASSERT_EQUAL( bletests_LONG_WRITE_LEN, xWriteEvent.xLength );
         TEST_ASSERT_EACH_EQUAL_INT8( 49, xWriteEvent.ucValue, bletestsSTRINGYFIED_UUID_SIZE);
 

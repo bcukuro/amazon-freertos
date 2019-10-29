@@ -355,7 +355,7 @@ BTGattServerCallbacks_t _xBTGattServerCb =
     .pxServiceAddedCb         = prvServiceAddedCb,
     .pxIncludedServiceAddedCb = prvIncludedServiceAddedCb,
     .pxCharacteristicAddedCb  = prvCharacteristicAddedCb,
-    .pxSetValCallbackCb       = NULL,
+    .pxSetValCallbackCb       = prvSetValCallbackCb,
     .pxDescriptorAddedCb      = prvCharacteristicDescrAddedCb,
     .pxServiceStartedCb       = prvServiceStartedCb,
     .pxServiceStoppedCb       = prvServiceStoppedCb,
@@ -742,6 +742,21 @@ static void prvCreateCharacteristic( BTService_t * xSrvc,
     xSrvc->pusHandlesBuffer[ xAttribute ] = xBLETESTCharCb.usAttrHandle;
 }
 
+void IotTestBleHal_WriteCheckAndResponse( bletestAttSrvB_t xAttribute,
+                               bool bNeedRsp,
+                               bool IsPrep,
+                               uint16_t usOffset )
+{
+    BLETESTwriteAttrCallback_t xWriteEvent;
+
+    xWriteEvent = IotTestBleHal_WriteReceive( xAttribute, bNeedRsp, IsPrep, usOffset );
+
+    if( xWriteEvent.bNeedRsp == true ) /* this flag is different depending on different stack implementation */
+    {
+        IotTestBleHal_WriteResponse( xAttribute, xWriteEvent, true );
+    }
+}
+
 void prvCreateIncludedService( BTService_t * xSrvc,
                                int xAttribute )
 {
@@ -762,34 +777,66 @@ void prvCreateIncludedService( BTService_t * xSrvc,
 
 void IotTestBleHal_CreateServiceA()
 {
-    prvCreateService( &_xSrvcA );
-    prvCreateCharacteristic( &_xSrvcA, bletestATTR_SRVCA_CHAR_A );
+    BTStatus_t xStatus;
+    xStatus = _pxGattServerInterface->pxAddServiceBlob( _ucBLEServerIf, &_xSrvcA );
+
+    if( xStatus == eBTStatusUnsupported )
+    {
+        prvCreateService( &_xSrvcA );
+        prvCreateCharacteristic( &_xSrvcA, bletestATTR_SRVCA_CHAR_A );
+    }
+    else
+    {
+        TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
+    }
 }
 
 void IotTestBleHal_CreateServiceB()
 {
-    prvCreateService( &_xSrvcB );
-    #if ENABLE_TC_AFQP_ADD_INCLUDED_SERVICE
-        prvCreateIncludedService( &_xSrvcB, bletestATTR_INCLUDED_SERVICE );
-    #endif
-    prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_A );
-    prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_B );
-    prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_C );
-    prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_D );
-    prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_E );
-    prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CCCD_E );
-    prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_F );
-    prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CCCD_F );
-    prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_A );
-    prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_B );
-    prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_C );
-    prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_D );
+    BTStatus_t xStatus;
+    xStatus = _pxGattServerInterface->pxAddServiceBlob( _ucBLEServerIf, &_xSrvcB );
+
+    if( xStatus == eBTStatusUnsupported )
+    {
+        prvCreateService( &_xSrvcB );
+        #if ENABLE_TC_AFQP_ADD_INCLUDED_SERVICE
+            prvCreateIncludedService( &_xSrvcB, bletestATTR_INCLUDED_SERVICE );
+        #endif
+        prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_A );
+        prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_B );
+        prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_C );
+        prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_D );
+        prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_E );
+        prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CCCD_E );
+        prvCreateCharacteristic( &_xSrvcB, bletestATTR_SRVCB_CHAR_F );
+        prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CCCD_F );
+        prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_A );
+        prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_B );
+        prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_C );
+        prvCreateCharacteristicDescriptor( &_xSrvcB, bletestATTR_SRVCB_CHARF_DESCR_D );
+    }
+    else
+    {
+        TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
+    }
 }
 
 void IotTestBleHal_CreateServiceC()
 {
-    prvCreateService( &_xSrvcC );
-    prvCreateCharacteristic( &_xSrvcC, bletestATTR_SRVCC_CHAR_A );
+    BTStatus_t xStatus;
+    xStatus = _pxGattServerInterface->pxAddServiceBlob( _ucBLEServerIf, &_xSrvcC );
+
+    if( xStatus == eBTStatusUnsupported )
+    {
+        /* Create service C */
+        IotTestBleHal_CreateServiceC();
+        /* Start service C */
+        IotTestBleHal_StartService( &_xSrvcC );
+    }
+    else
+    {
+        TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
+    }
 }
 
 #if ENABLE_TC_INTEGRATION_ADD_CHARACTERISTIC_IN_CALLBACK
@@ -1282,6 +1329,20 @@ void prvCharacteristicAddedCb( BTStatus_t xStatus,
     pxAttrCb->xEvent.lHandle = NO_HANDLE;
 
     pushToQueue( &pxAttrCb->xEvent.eventList );
+}
+
+void prvSetValCallbackCb( BTStatus_t xStatus,
+                          uint16_t usAttrHandle )
+{
+    BLETESTSetValCallback_t * pxSetValCb =  IotTest_Malloc( sizeof( BLETESTSetValCallback_t ) );
+
+    pxSetValCb->xStatus = xStatus;
+    pxSetValCb->usAttrHandle = usAttrHandle;
+    
+    pxSetValCb->xEvent.xEventTypes = eBLEHALEventSetValCb;
+    pxSetValCb->xEvent.lHandle = NO_HANDLE;
+
+    pushToQueue( &pxSetValCb->xEvent.eventList );
 }
 
 #if ENABLE_TC_INTEGRATION_ADD_CHARACTERISTIC_IN_CALLBACK

@@ -34,22 +34,14 @@ from bleAdapter import bleAdapter
 import testutils
 
 
-def main():
-    agent = None
-    numberOfReconnect = 1
-    numberOfInit = 1
-    numberOfEnable = 1
-    isTestSuccessFull = True
-
-    scan_filter = dict()
-
-    bleAdapter.init()
-    agent = securityAgent.createSecurityAgent(agent=agent)
-
-    for i in range(10):
-        isTestSuccessFull = runTest.Advertise_With_16bit_ServiceUUID(
-            scan_filter=scan_filter, bleAdapter=bleAdapter)
-        runTest.submitTestResult(isTestSuccessFull,
-                                 runTest.Advertise_With_16bit_ServiceUUID)
-
-    runTest.printTestsSummary()
+def ReadCharacteristicsDescriptor(bleAdapter, agent, scan_filter):
+    isTestSuccessFull = runTest.ReadCharacteristicsDescriptor(
+        scan_filter=scan_filter, bleAdapter=bleAdapter)
+    runTest.submitTestResult(isTestSuccessFull,
+                             runTest.ReadCharacteristicsDescriptor)
+    
+def Stress_NotificationIndication(bleAdapter, agent, scan_filter):
+    isTestSuccessFull = runTest.Stress_NotificationIndication(
+        scan_filter=scan_filter, bleAdapter=bleAdapter)
+    runTest.submitTestResult(isTestSuccessFull,
+                             runTest.Stress_NotificationIndication)

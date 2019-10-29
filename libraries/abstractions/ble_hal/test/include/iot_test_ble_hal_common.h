@@ -223,6 +223,7 @@ typedef enum
     eBLEHALEventSSPrequestConfirmationCb = 22,
     eBLEHALEventPairingStateChangedCb = 23,
     eBLEHALEventRequestExecWriteCb = 24,
+    eBLEHALEventSetValCb = 25,
     eBLENbHALEvents,
 } BLEHALEventsTypes_t;
 
@@ -248,6 +249,13 @@ typedef struct
     uint16_t usSrvHandle;
     BTUuid_t xUUID;
 } BLETESTAttrCallback_t;
+
+typedef struct
+{
+    BLEHALEventsInternals_t xEvent;
+    BTStatus_t xStatus;
+    uint16_t usAttrHandle;
+} BLETESTSetValCallback_t;
 
 typedef struct
 {
@@ -493,6 +501,8 @@ void prvRequestExecWriteCb( uint16_t usConnId,
 void prvBondedCb( BTStatus_t xStatus,
                   BTBdaddr_t * pxRemoteBdAddr,
                   bool bIsBonded );
+void prvSetValCallbackCb( BTStatus_t xStatus,
+                          uint16_t usAttrHandle );
 
 BTStatus_t bleStackInit( void );
 void IotTestBleHal_BLESetUp( void );
@@ -529,7 +539,10 @@ void IotTestBleHal_SetAdvProperty( void );
 void IotTestBleHal_SetAdvData( BTUuid_t xServiceUuid,
                                uint16_t usManufacturerLen,
                                char * pcManufacturerData );
-
+void IotTestBleHal_WriteCheckAndResponse( bletestAttSrvB_t xAttribute,
+                               bool bNeedRsp,
+                               bool IsPrep,
+                               uint16_t usOffset );
 void prvSendNotification( bletestAttSrvB_t xAttribute,
                           bool bConfirm );
 void IotTestBleHal_CheckIndicationNotification( bool IsIndication,

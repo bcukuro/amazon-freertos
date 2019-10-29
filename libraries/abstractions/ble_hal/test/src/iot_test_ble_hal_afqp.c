@@ -280,7 +280,7 @@ TEST( Full_BLE, BLE_Connection_BondedReconnectAndPair )
     IotTestBleHal_StartAdvertisement();
     IotTestBleHal_WaitConnection( true );
 
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_B,
+    IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHAR_B,
                               true,
                               false,
                               0 );
@@ -294,7 +294,7 @@ TEST( Full_BLE, BLE_Connection_Disconnect )
 
 TEST( Full_BLE, BLE_Connection_Mode1Level4_Property_WriteDescr )
 {
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHARF_DESCR_B,
+    IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHARF_DESCR_B,
                               true,
                               false,
                               0 );
@@ -302,7 +302,7 @@ TEST( Full_BLE, BLE_Connection_Mode1Level4_Property_WriteDescr )
 
 TEST( Full_BLE, BLE_Connection_Mode1Level4_Property_WriteChar )
 {
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_B,
+    IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHAR_B,
                               true,
                               false,
                               0 );
@@ -338,7 +338,7 @@ TEST( Full_BLE, BLE_Connection_Mode1Level4 )
     TEST_ASSERT_EQUAL( 0, memcmp( &xPairingStateChangedEvent.xRemoteBdAddr, &_xAddressConnectedDevice, sizeof( BTBdaddr_t ) ) );
     TEST_ASSERT_EQUAL( eBTSecLevelSecureConnect, xPairingStateChangedEvent.xSecurityLevel );
 
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_B,
+    IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHAR_B,
                               true,
                               false,
                               0 );
@@ -380,21 +380,6 @@ void prvExecuteWriteCheckAndResponse( bletestAttSrvB_t xAttribute,
         xStatus = IotTestBleHal_WaitEventFromQueue( eBLEHALEventConfimCb, usHandlesBufferB[ xAttribute ], ( void * ) &xConfirmEvent, sizeof( BLETESTconfirmCallback_t ), BLE_TESTS_WAIT );
         TEST_ASSERT_EQUAL( eBTStatusSuccess, xConfirmEvent.xStatus );
         /* TEST_ASSERT_EQUAL( usHandlesBufferB[ xAttribute ], xConfirmEvent.usAttrHandle ); */
-    }
-}
-
-void prvWriteCheckAndResponse( bletestAttSrvB_t xAttribute,
-                               bool bNeedRsp,
-                               bool IsPrep,
-                               uint16_t usOffset )
-{
-    BLETESTwriteAttrCallback_t xWriteEvent;
-
-    xWriteEvent = IotTestBleHal_WriteReceive( xAttribute, bNeedRsp, IsPrep, usOffset );
-
-    if( xWriteEvent.bNeedRsp == true ) /* this flag is different depending on different stack implementation */
-    {
-        IotTestBleHal_WriteResponse( xAttribute, xWriteEvent, true );
     }
 }
 
@@ -524,7 +509,7 @@ TEST( Full_BLE, BLE_Property_Notification )
 
 TEST( Full_BLE, BLE_Property_WriteNoResponse )
 {
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_D,
+    IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHAR_D,
                               false,
                               false,
                               0 );
@@ -593,7 +578,7 @@ TEST( Full_BLE, BLE_Property_ReadCharacteristic )
 
 TEST( Full_BLE, BLE_Property_WriteDescriptor )
 {
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHARF_DESCR_A,
+    IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHARF_DESCR_A,
                               true,
                               false,
                               0 );
@@ -601,7 +586,7 @@ TEST( Full_BLE, BLE_Property_WriteDescriptor )
 
 TEST( Full_BLE, BLE_Property_WriteCharacteristic )
 {
-    prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
+    IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
                               true,
                               false,
                               0 );
@@ -632,7 +617,7 @@ TEST( Full_BLE, BLE_Property_WriteLongCharacteristic )
             IotTestBleHal_WriteResponse( bletestATTR_SRVCB_CHAR_A, xWriteEvent, true );
         }
 
-        prvWriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
+        IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
                                   true,
                                   true,
                                   bletestsMTU_SIZE1 - 5 );

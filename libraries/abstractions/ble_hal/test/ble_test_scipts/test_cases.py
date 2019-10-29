@@ -1,9 +1,11 @@
 from startTests_afqp import main_afqp
 from startTests_integration import *
+from startTests_stress import *
 from testClass import runTest
 
 AFQP_UUID = "8a7f1168-48af-4efb-83b5-e679f9320100"
 INTEGRATION_UUID = "8a7f1168-48af-4efb-83b5-e679f93202"
+STRESS_UUID = "8a7f1168-48af-4efb-83b5-e679f93203"
 
 test_uuid = {
     AFQP_UUID :
@@ -33,5 +35,13 @@ test_uuid = {
     INTEGRATION_UUID + "08" :
     {
         "test_function" : Send_Data_After_Disconnected
+    },
+    STRESS_UUID + "01" :
+    {
+        "test_function" : ReadCharacteristicsDescriptor
+    },
+    STRESS_UUID + "02" :
+    {
+        "test_function" : Stress_NotificationIndication
     }
 }

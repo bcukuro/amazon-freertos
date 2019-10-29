@@ -25,6 +25,7 @@
 
 import Queue
 import sys
+import os
 import threading
 import securityAgent
 import bleAdapter
@@ -32,6 +33,7 @@ import time
 from testClass import runTest
 from bleAdapter import bleAdapter
 from test_cases import test_uuid
+import testutils
 
 
 def main():
@@ -57,5 +59,10 @@ def main():
 
         time.sleep(2)
         runTest.printTestsSummary()
+
+        os.system("rm -rf \"/var/lib/bluetooth/*\"")
+        os.system("hciconfig hci0 reset")
+
+        testutils.removeBondedDevices()
 
         agent = securityAgent.createSecurityAgent(agent=agent)

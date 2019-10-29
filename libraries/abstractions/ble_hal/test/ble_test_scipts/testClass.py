@@ -642,6 +642,94 @@ class runTest:
             discoveryEvent_Cb=runTest.discoveryEventCb_16bit)
         return True
 
+    @staticmethod
+    def ReadCharacteristicsDescriptor(scan_filter,
+                                      bleAdapter):
+        isTestSuccessFull = True
+        runTest._advertisement_start(scan_filter=scan_filter,
+                                     UUID=runTest.DUT_UUID_16,
+                                     discoveryEvent_Cb=runTest.discoveryEventCb,
+                                     bleAdapter=bleAdapter)
+        runTest._simple_connect()
+        runTest.stopAdvertisement(scan_filter)
+        # Discover all primary services
+        isTestSuccessFull = runTest.discoverPrimaryServices()
+        runTest.submitTestResult(
+            isTestSuccessFull,
+            runTest.discoverPrimaryServices)
+        bleAdapter.gatt.updateLocalAttributeTable()
+        isTestSuccessFull &= runTest.checkUUIDs(bleAdapter.gatt)
+        # Check attribute table properties
+        isTestSuccessFull &= runTest.checkProperties(bleAdapter.gatt)
+
+        # Check read/write, simple connection
+        for i in range(10):
+            isTestSuccessFull &= runTest.readWriteSimpleConnection()
+            runTest.submitTestResult(
+                isTestSuccessFull,
+                runTest.readWriteSimpleConnection)
+            time.sleep(2)
+
+        runTest.stopAdvertisement(scan_filter)
+        bleAdapter.disconnect()
+
+        testutils.removeBondedDevices()
+        return True
+
+    @staticmethod
+    def Stress_NotificationIndication(scan_filter,
+                                      bleAdapter):
+        isTestSuccessFull = True
+        runTest._advertisement_start(scan_filter=scan_filter,
+                                     UUID=runTest.DUT_UUID_16,
+                                     discoveryEvent_Cb=runTest.discoveryEventCb,
+                                     bleAdapter=bleAdapter)
+        runTest._simple_connect()
+        runTest.stopAdvertisement(scan_filter)
+        # Discover all primary services
+        isTestSuccessFull = runTest.discoverPrimaryServices()
+        runTest.submitTestResult(
+            isTestSuccessFull,
+            runTest.discoverPrimaryServices)
+        bleAdapter.gatt.updateLocalAttributeTable()
+        isTestSuccessFull &= runTest.checkUUIDs(bleAdapter.gatt)
+        # Check attribute table properties
+        isTestSuccessFull &= runTest.checkProperties(bleAdapter.gatt)
+
+        bleAdapter.subscribeForNotification(
+                runTest.DUT_NOTIFY_CHAR_UUID)  # subscribe for next test
+        bleAdapter.subscribeForNotification(
+            runTest.DUT_INDICATE_CHAR_UUID)  # subscribe for next test
+
+        # Check read/write, simple connection
+        for i in range(10):
+            # Enable and receive notification and indication then disable.
+            bleAdapter.setNotificationCallBack(runTest.notificationCb)
+            isTestSuccessFull = True
+            runTest.mainloop.run()
+            runTest.submitTestResult(isTestSuccessFull, runTest.notification)
+
+            bleAdapter.setNotificationCallBack(runTest.indicationCb)
+            isTestSuccessFull = True
+            runTest.mainloop.run()
+            runTest.submitTestResult(isTestSuccessFull, runTest.indication)
+        time.sleep(5)
+
+        isTestSuccessFull = bleAdapter.subscribeForNotification(
+            runTest.DUT_NOTIFY_CHAR_UUID, subscribe=False)  # unsubscribe
+        isTestSuccessFull = True
+        runTest.submitTestResult(isTestSuccessFull, runTest.removeNotification)
+
+        isTestSuccessFull = bleAdapter.subscribeForNotification(
+            runTest.DUT_INDICATE_CHAR_UUID, subscribe=False)  # unsubscribe
+        isTestSuccessFull = True
+        runTest.submitTestResult(isTestSuccessFull, runTest.removeIndication)
+
+        runTest.stopAdvertisement(scan_filter)
+        bleAdapter.disconnect()
+
+        testutils.removeBondedDevices()
+        return True
 
     @staticmethod
     def _scan_discovery_with_timer(bleAdapter):

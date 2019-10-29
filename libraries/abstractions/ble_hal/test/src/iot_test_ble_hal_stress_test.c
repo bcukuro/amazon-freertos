@@ -36,6 +36,8 @@ extern BTInterface_t * _pxBTInterface;
 extern BTCallbacks_t _xBTManagerCb;
 extern BTBleAdapterCallbacks_t _xBTBleAdapterCb;
 extern BTGattServerCallbacks_t _xBTGattServerCb;
+extern uint16_t usHandlesBufferB[ bletestATTR_SRVCB_NUMBER ];
+extern BTGattServerInterface_t * _pxGattServerInterface;
 
 #define bletestsFREERTOS_SVC_UUID_128_STRESS   { 0x00, 0x03, 0x32, 0xF9, 0x79, 0xE6, 0xB5, 0x83, 0xFB, 0x4E, 0xAF, 0x48, 0x68, 0x11, 0x7F, 0x8A }
 #define bletestsFREERTOS_SVC_UUID_32_STRESS    0x8A7F0300
@@ -135,16 +137,52 @@ TEST_TEAR_DOWN( Full_BLE_Stress_Test )
 
 /*-----------------------------------------------------------*/
 
+TEST_GROUP( Full_BLE_Stress_Test_common_GATT );
+
+TEST_SETUP( Full_BLE_Stress_Test_common_GATT )
+{
+    GAP_common_setup();
+}
+
+TEST_TEAR_DOWN( Full_BLE_Stress_Test_common_GATT )
+{
+    GAP_common_teardown();
+}
+
+TEST_GROUP_RUNNER( Full_BLE_Stress_Test_common_GATT )
+{
+}
+
+/*-----------------------------------------------------------*/
+
+TEST_GROUP( Full_BLE_Stress_Test_Advertisement );
+
+TEST_SETUP( Full_BLE_Stress_Test_Advertisement )
+{
+    GATT_setup();
+}
+
+TEST_TEAR_DOWN( Full_BLE_Stress_Test_Advertisement )
+{
+    GATT_teardown();
+}
+
+TEST_GROUP_RUNNER( Full_BLE_Stress_Test_Advertisement )
+{
+}
+/*-----------------------------------------------------------*/
+
 TEST_GROUP_RUNNER( Full_BLE_Stress_Test )
 {
     /* Initializations that need to be done once for all the tests. */
     RUN_TEST_CASE( Full_BLE, BLE_Setup );
-    RUN_TEST_CASE_STRESS( Full_BLE_Stress_Test, BLE_Manager_Enable_Disable, 10 );
-    RUN_TEST_CASE_STRESS( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_16bit_ServiceUUID, 10 );
-    RUN_TEST_GROUP( Full_BLE );
-    RUN_TEST_CASE( Full_BLE, BLE_Setup );
-    RUN_TEST_CASE_STRESS( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_16bit_ServiceUUID, 10 );
-    // RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_WriteCharacteristicDecriptor );
+    // RUN_TEST_CASE_STRESS( Full_BLE_Stress_Test, BLE_Manager_Enable_Disable, 2 );
+    // RUN_TEST_CASE_STRESS( Full_BLE_Stress_Test_Advertisement, BLE_AddProfileServicesCharacteristics, 2 );
+    // RUN_TEST_CASE_STRESS( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_16bit_ServiceUUID, 2 );
+    // RUN_TEST_GROUP( Full_BLE );
+    RUN_TEST_CASE_STRESS( Full_BLE_Stress_Test_Advertisement, BLE_NotificationIndication , 1);
+    // RUN_TEST_CASE_STRESS( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_16bit_ServiceUUID, 2 );
+    // RUN_TEST_CASE_STRESS( Full_BLE_Stress_Test_Advertisement, BLE_ReadCharacteristicsDescriptor, 1 );
 
     RUN_TEST_CASE( Full_BLE, BLE_Free );
 }
@@ -155,8 +193,103 @@ TEST( Full_BLE_Stress_Test, BLE_Manager_Enable_Disable )
     GAP_common_teardown();
 }
 
-// TEST( Full_BLE_Stress_Test, BLE_WriteCharacteristicDecriptor )
-// {
-//     GAP_common_setup();
-//     GAP_common_teardown();
-// }
+TEST( Full_BLE_Stress_Test_Advertisement, BLE_AddProfileServicesCharacteristics )
+{
+    for (int i = 0; i < 10; i++)
+    {
+        IotTestBleHal_SetAdvProperty();
+        IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType32), 0, NULL );
+    }
+}
+
+TEST( Full_BLE_Stress_Test_Advertisement, BLE_ReadCharacteristicsDescriptor )
+{
+    BTStatus_t xStatus;
+
+    prv_test_number = 0x01;
+    // BTGattResponse_t xGattSetVal;
+    // BLETESTSetValCallback_t xSetValEvent;
+    // xGattSetVal.usHandle = bletestATTR_SRVCB_CHAR_A;
+    // xGattSetVal.xAttrValue.usHandle = bletestATTR_SRVCB_CHAR_A;
+    // xGattSetVal.xAttrValue.usOffset = 0;
+    // xGattSetVal.xAttrValue.xLen = (uint8_t *) "Hello Worls";
+    // xGattSetVal.xAttrValue.pucValue = (size_t) sizeof("Hello Worls");
+
+    uint8_t repetation = 10;
+    IotTestBleHal_CreateServiceA();
+    IotTestBleHal_CreateServiceB();
+    IotTestBleHal_SetAdvProperty();
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
+    IotTestBleHal_StartAdvertisement();
+
+    /* Simple Connect */
+    // xStatus = _pxGattServerInterface->pxSetVal( &xGattSetVal );
+    // TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
+    
+    // xStatus = IotTestBleHal_WaitEventFromQueue( eBLEHALEventSetValCb, NO_HANDLE , ( void * ) &xSetValEvent, sizeof( BLETESTSetValCallback_t ), BLE_TESTS_WAIT );
+    // TEST_ASSERT_EQUAL( eBTStatusSuccess, xSetValEvent.xStatus );
+
+
+    IotTestBleHal_WaitConnection( true );
+    for (int i = 0; i < repetation; i++)
+    {
+        IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHAR_A,
+                              true,
+                              false,
+                              0 );
+        IotTestBleHal_WriteCheckAndResponse( bletestATTR_SRVCB_CHARF_DESCR_A,
+                              true,
+                              false,
+                              0 );
+        prvReadCheckAndResponse( bletestATTR_SRVCB_CHAR_A );
+        prvReadCheckAndResponse( bletestATTR_SRVCB_CHARF_DESCR_A );
+    }
+    /* Disconnect */
+    IotTestBleHal_WaitConnection( false );
+    IotTestBleHal_StopService( &_xSrvcB );
+    IotTestBleHal_StopService( &_xSrvcA );
+    IotTestBleHal_DeleteService( &_xSrvcB );
+    IotTestBleHal_DeleteService( &_xSrvcA );
+}
+
+TEST( Full_BLE_Stress_Test_Advertisement, BLE_NotificationIndication )
+{
+    prv_test_number = 0x02;
+    uint8_t repetation = 10;
+    IotTestBleHal_CreateServiceA();
+    IotTestBleHal_CreateServiceB();
+    IotTestBleHal_SetAdvProperty();
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
+    IotTestBleHal_StartAdvertisement();
+    
+    /* Simple Connect */
+    IotTestBleHal_WaitConnection( true );
+
+    printf("a\n");
+    IotTestBleHal_checkNotificationIndication( bletestATTR_SRVCB_CCCD_E, true );
+    IotTestBleHal_checkNotificationIndication( bletestATTR_SRVCB_CCCD_F, true );
+
+    for (int i = 0; i < repetation; i++)
+    {
+
+        printf("ab %i\n",i);
+        IotTestBleHal_CheckIndicationNotification( false, true );
+        printf("ac %i\n",i);
+        IotTestBleHal_CheckIndicationNotification( true, true );
+        printf("ad %i\n",i);
+    }
+
+    printf("ab\n");
+    IotTestBleHal_checkNotificationIndication( bletestATTR_SRVCB_CCCD_E, false );
+    printf("ac\n");
+    IotTestBleHal_checkNotificationIndication( bletestATTR_SRVCB_CCCD_F, false );
+    printf("ad\n");
+
+    /* Disconnect */
+    IotTestBleHal_WaitConnection( false );
+    printf("a\n");
+    IotTestBleHal_StopService( &_xSrvcB );
+    IotTestBleHal_StopService( &_xSrvcA );
+    IotTestBleHal_DeleteService( &_xSrvcB );
+    IotTestBleHal_DeleteService( &_xSrvcA );
+}

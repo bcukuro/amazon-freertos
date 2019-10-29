@@ -33,46 +33,41 @@ import time
 from testClass import runTest
 from bleAdapter import bleAdapter
 
-def main():
-    scan_filter = dict()
-
-    bleAdapter.init()
-    agent = securityAgent.createSecurityAgent()
-
+def Advertise_Without_Properties(bleAdapter, agent, scan_filter):
     isTestSuccessFull = runTest.Advertise_Without_Properties(
         scan_filter=scan_filter, bleAdapter=bleAdapter)
     runTest.submitTestResult(isTestSuccessFull,
                              runTest.Advertise_Without_Properties)
 
+def Advertise_With_16bit_ServiceUUID(bleAdapter, agent, scan_filter):
     isTestSuccessFull = runTest.Advertise_With_16bit_ServiceUUID(
         scan_filter=scan_filter, bleAdapter=bleAdapter)
     runTest.submitTestResult(isTestSuccessFull,
                              runTest.Advertise_With_16bit_ServiceUUID)
 
+def Advertise_With_Manufacture_Data(bleAdapter, agent, scan_filter):
     isTestSuccessFull = runTest.Advertise_With_Manufacture_Data(
         scan_filter=scan_filter, bleAdapter=bleAdapter)
     runTest.submitTestResult(
         isTestSuccessFull,
         runTest.Advertise_With_Manufacture_Data)
 
-
+def Advertise_Interval_Consistent_After_BT_Reset(bleAdapter, agent, scan_filter):
     isTestSuccessFull = runTest.Advertise_Interval_Consistent_After_BT_Reset(
         scan_filter=scan_filter, bleAdapter=bleAdapter)
     runTest.submitTestResult(isTestSuccessFull,
                              runTest.Advertise_Interval_Consistent_After_BT_Reset)
 
+def Write_Notification_Size_Greater_Than_MTU_3(bleAdapter, agent, scan_filter):
     isTestSuccessFull = runTest.Write_Notification_Size_Greater_Than_MTU_3(
         scan_filter=scan_filter, bleAdapter=bleAdapter)
     runTest.submitTestResult(
         isTestSuccessFull,
         runTest.Write_Notification_Size_Greater_Than_MTU_3)
 
+def Send_Data_After_Disconnected(bleAdapter, agent, scan_filter):
     isTestSuccessFull = runTest.Send_Data_After_Disconnected(
         scan_filter=scan_filter, bleAdapter=bleAdapter)
     runTest.submitTestResult(
         isTestSuccessFull,
         runTest.Send_Data_After_Disconnected)
-
-    time.sleep(2)  # wait for connection parameters update
-    runTest.submitTestResult(isTestSuccessFull, runTest.disconnect)
-    runTest.printTestsSummary()

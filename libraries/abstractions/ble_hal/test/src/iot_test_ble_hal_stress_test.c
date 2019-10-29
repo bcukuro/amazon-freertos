@@ -34,6 +34,88 @@ extern BTService_t _xSrvcA;
 extern BTService_t _xSrvcB;
 extern BTInterface_t * _pxBTInterface;
 extern BTCallbacks_t _xBTManagerCb;
+extern BTBleAdapterCallbacks_t _xBTBleAdapterCb;
+extern BTGattServerCallbacks_t _xBTGattServerCb;
+
+#define bletestsFREERTOS_SVC_UUID_128_STRESS   { 0x00, 0x03, 0x32, 0xF9, 0x79, 0xE6, 0xB5, 0x83, 0xFB, 0x4E, 0xAF, 0x48, 0x68, 0x11, 0x7F, 0x8A }
+#define bletestsFREERTOS_SVC_UUID_32_STRESS    0x8A7F0300
+#define bletestsFREERTOS_SVC_UUID_16_STRESS    0x0300
+
+uint8_t prv_test_number;
+
+static BTUuid_t Test_Service_UUID_setup(BTuuidType_t type)
+{
+    uint8_t serviceUUID_128[ bt128BIT_UUID_LEN ] = bletestsFREERTOS_SVC_UUID_128_STRESS;
+    BTUuid_t xServiceUuid_Integration =
+    {
+        .ucType = type
+    };
+
+    switch( type )
+    {
+        case eBTuuidType16:
+            xServiceUuid_Integration.uu.uu16 = bletestsFREERTOS_SVC_UUID_16_STRESS + (uint16_t) prv_test_number;
+            break;
+
+        case eBTuuidType32:
+            xServiceUuid_Integration.uu.uu32 = bletestsFREERTOS_SVC_UUID_32_STRESS + (uint32_t) prv_test_number;
+            break;
+
+        case eBTuuidType128:
+            memcpy( xServiceUuid_Integration.uu.uu128, serviceUUID_128, sizeof( serviceUUID_128 ) );
+            xServiceUuid_Integration.uu.uu128[0] += prv_test_number;
+            break;
+    }
+    return xServiceUuid_Integration;
+}
+
+#define RUN_TEST_CASE_STRESS(group, name, repetation) \
+    { void TEST_##group##_##name##_run(void);\
+    for (uint16_t i = 0; i < (uint16_t) repetation; i++) \
+      TEST_##group##_##name##_run(); }
+
+static void GAP_common_teardown()
+{
+    BTStatus_t xStatus = eBTStatusSuccess;
+
+    /* Disable */
+    IotTestBleHal_BLEEnable( false );
+
+    /* Deinit */
+    xStatus = _pxBTInterface->pxBtManagerCleanup();
+    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
+}
+/*-----------------------------------------------------------*/
+
+static void GAP_common_setup()
+{
+    BTStatus_t xStatus = eBTStatusSuccess;
+
+    /* Get BT interface */
+    _pxBTInterface = ( BTInterface_t * ) BTGetBluetoothInterface();
+    TEST_ASSERT_NOT_EQUAL( NULL, _pxBTInterface );
+
+    /* First time init */
+    xStatus = _pxBTInterface->pxBtManagerInit( &_xBTManagerCb );
+    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
+
+    /* Enable */
+    IotTestBleHal_BLEEnable( true );
+}
+
+static void GATT_teardown()
+{
+    IotTestBleHal_BTUnregister();
+    GAP_common_teardown();
+}
+/*-----------------------------------------------------------*/
+
+static void GATT_setup()
+{
+    GAP_common_setup();
+    IotTestBleHal_BLEGAPInit( &_xBTBleAdapterCb, true );
+    IotTestBleHal_BLEGATTInit( &_xBTGattServerCb, true );
+}
 
 /*-----------------------------------------------------------*/
 
@@ -57,106 +139,24 @@ TEST_GROUP_RUNNER( Full_BLE_Stress_Test )
 {
     /* Initializations that need to be done once for all the tests. */
     RUN_TEST_CASE( Full_BLE, BLE_Setup );
-
-    for( uint32_t init_loop = 0; init_loop < INIT_DEINIT_NUMBER_STRESS_TEST; init_loop++ )
-    {
-        RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Stack_Init );
-
-        for( uint32_t enable_loop = 0; enable_loop < ENABLE_DISABLE_NUMBER_STRESS_TEST; enable_loop++ )
-        {
-            /*TODO: add some randomness to catch timing issues */
-
-            RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Stack_Enable );
-
-            RUN_TEST_CASE( Full_BLE, BLE_Initialize_BLE_GAP );
-            RUN_TEST_CASE( Full_BLE, BLE_Initialize_BLE_GATT );
-
-            RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Service_Create );
-            RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Service_Restart );
-            RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Service_Delete );
-
-            RUN_TEST_CASE( Full_BLE, BLE_Advertising_SetProperties );       /*@TOTO, incomplete */
-            RUN_TEST_CASE( Full_BLE, BLE_Connection_RemoveAllBonds );
-            RUN_TEST_CASE( Full_BLE, BLE_Advertising_SetAvertisementData ); /*@TOTO, incomplete */
-
-            RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Connection_ReConnect );
-
-            RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Teardown );
-
-            RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Stack_Disable );
-        }
-
-        RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_Stack_Deinit );
-    }
+    RUN_TEST_CASE_STRESS( Full_BLE_Stress_Test, BLE_Manager_Enable_Disable, 10 );
+    RUN_TEST_CASE_STRESS( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_16bit_ServiceUUID, 10 );
+    RUN_TEST_GROUP( Full_BLE );
+    RUN_TEST_CASE( Full_BLE, BLE_Setup );
+    RUN_TEST_CASE_STRESS( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_16bit_ServiceUUID, 10 );
+    // RUN_TEST_CASE( Full_BLE_Stress_Test, BLE_WriteCharacteristicDecriptor );
 
     RUN_TEST_CASE( Full_BLE, BLE_Free );
 }
 
-TEST( Full_BLE_Stress_Test, BLE_Stack_Init )
+TEST( Full_BLE_Stress_Test, BLE_Manager_Enable_Disable )
 {
-    IotTestBleHal_BLEManagerInit( &_xBTManagerCb );
+    GAP_common_setup();
+    GAP_common_teardown();
 }
 
-TEST( Full_BLE_Stress_Test, BLE_Stack_Enable )
-{
-    IotTestBleHal_BLEEnable( true );
-}
-
-TEST( Full_BLE_Stress_Test, BLE_Stack_Disable )
-{
-    IotTestBleHal_BLEEnable( false );
-}
-
-TEST( Full_BLE_Stress_Test, BLE_Stack_Deinit )
-{
-    BTStatus_t xStatus = eBTStatusSuccess;
-
-    xStatus = _pxBTInterface->pxBtManagerCleanup();
-    TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
-}
-
-TEST( Full_BLE_Stress_Test, BLE_Service_Delete )
-{
-    IotTestBleHal_DeleteService( &_xSrvcA );
-    IotTestBleHal_DeleteService( &_xSrvcB );
-}
-
-TEST( Full_BLE_Stress_Test, BLE_Teardown )
-{
-    IotTestBleHal_BTUnregister();
-}
-
-TEST( Full_BLE_Stress_Test, BLE_Service_Create )
-{
-    IotTestBleHal_CreateServiceA();
-    IotTestBleHal_CreateServiceB();
-}
-
-TEST( Full_BLE_Stress_Test, BLE_Service_Restart )
-{
-    prvRestartService( &_xSrvcA );
-    prvRestartService( &_xSrvcB );
-}
-
-TEST( Full_BLE_Stress_Test, BLE_Connection_ReConnect )
-{
-    uint32_t loop;
-
-    for( loop = 0; loop < RECONNECT_NUMBER_STRESS_TEST; loop++ )
-    {
-        IotTestBleHal_StartAdvertisement();
-        IotTestBleHal_WaitConnection( true );
-        IotTestBleHal_WaitConnection( false );
-    }
-}
-
-void prvRestartService( BTService_t * xRefSrvc )
-{
-    uint16_t loop;
-
-    for( loop = 0; loop < RESTART_NUMBER_STRESS_TEST; loop++ )
-    {
-        IotTestBleHal_StartService( xRefSrvc );
-        IotTestBleHal_StopService( xRefSrvc );
-    }
-}
+// TEST( Full_BLE_Stress_Test, BLE_WriteCharacteristicDecriptor )
+// {
+//     GAP_common_setup();
+//     GAP_common_teardown();
+// }

@@ -40,6 +40,8 @@ ENABLE_TC_AFQP_SECONDARY_SERVICE = 0
 class runTest:
     mainloop = GObject.MainLoop()
 
+    TEST_CASE_UUID = None
+
     DUT_GENERIC_STRING = "hello"
     DUT_FAIL_STRING = "fail"
     DUT_OPEN_CHAR_UUID = "8a7f1168-48af-4efb-83b5-e679f9320002"
@@ -483,7 +485,7 @@ class runTest:
             if (DUT_UUID not in UUIDs):
                 print("Advertisement test: Waiting for device UUID")
                 sys.stdout.flush()
-                return False
+                # return False
 
             # Remove test for service B. Advertisement messages were too small.
             # Should look into improving this part if it can be done.
@@ -515,6 +517,7 @@ class runTest:
             sys.stdout.flush()
             return False
 
+        runTest.TEST_CASE_UUID = str(UUIDs[0])
         return True
 
     @staticmethod
@@ -538,9 +541,6 @@ class runTest:
 
     @staticmethod
     def _advertisement_start(scan_filter, UUID, discoveryEvent_Cb, bleAdapter):
-        scan_filter.update({"UUIDs": [UUID]})
-        bleAdapter.setDiscoveryFilter(scan_filter)
-
         # Discovery test
         bleAdapter.startDiscovery(discoveryEvent_Cb)
         runTest.mainloop.run()

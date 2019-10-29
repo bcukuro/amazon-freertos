@@ -59,6 +59,39 @@ extern BTUuid_t xServerUUID;
 extern BTUuid_t xAppUUID;
 extern bool CharAddedComplete;
 
+#define bletestsFREERTOS_SVC_UUID_128_INTAGRATION   { 0x00, 0x02, 0x32, 0xF9, 0x79, 0xE6, 0xB5, 0x83, 0xFB, 0x4E, 0xAF, 0x48, 0x68, 0x11, 0x7F, 0x8A }
+#define bletestsFREERTOS_SVC_UUID_32_INTAGRATION    0x8A7F0200
+#define bletestsFREERTOS_SVC_UUID_16_INTAGRATION    0x0200
+
+
+uint8_t prv_test_number;
+
+static BTUuid_t Test_Service_UUID_setup(BTuuidType_t type)
+{
+    uint8_t serviceUUID_128[ bt128BIT_UUID_LEN ] = bletestsFREERTOS_SVC_UUID_128_INTAGRATION;
+    BTUuid_t xServiceUuid_Integration =
+    {
+        .ucType = type
+    };
+
+    switch( type )
+    {
+        case eBTuuidType16:
+            xServiceUuid_Integration.uu.uu16 = bletestsFREERTOS_SVC_UUID_16_INTAGRATION + (uint16_t) prv_test_number;
+            break;
+
+        case eBTuuidType32:
+            xServiceUuid_Integration.uu.uu32 = bletestsFREERTOS_SVC_UUID_32_INTAGRATION + (uint32_t) prv_test_number;
+            break;
+
+        case eBTuuidType128:
+            memcpy( xServiceUuid_Integration.uu.uu128, serviceUUID_128, sizeof( serviceUUID_128 ) );
+            xServiceUuid_Integration.uu.uu128[0] += prv_test_number;
+            break;
+    }
+    return xServiceUuid_Integration;
+}
+
 TEST_GROUP( Full_BLE_Integration_Test );
 
 TEST_SETUP( Full_BLE_Integration_Test )
@@ -117,7 +150,7 @@ TEST_SETUP( Full_BLE_Integration_Test_Connection )
 
     /* Advertise and Connect */
     IotTestBleHal_SetAdvProperty();
-    IotTestBleHal_SetAdvData( eBTuuidType128, 0, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
     IotTestBleHal_StartAdvertisement();
     IotTestBleHal_WaitConnection( true );
 }
@@ -181,6 +214,7 @@ TEST_GROUP_RUNNER( Full_BLE_Integration_Test )
 
 TEST( Full_BLE_Integration_Test_common_GATT, BLE_Add_Characteristic_In_Callback )
 {
+    prv_test_number = 0x01;
     BTStatus_t xStatus;
 
     IotTestBleHal_BLEGAPInit( &_xBTBleAdapterCb, true );
@@ -208,6 +242,7 @@ TEST( Full_BLE_Integration_Test_common_GATT, BLE_Add_Characteristic_In_Callback 
 
 TEST( Full_BLE_Integration_Test, BLE_Callback_NULL_Check )
 {
+    prv_test_number = 0x09;
     BTStatus_t xStatus;
 
     /* Initialize with NULL Cb */
@@ -244,7 +279,8 @@ TEST( Full_BLE_Integration_Test, BLE_Callback_NULL_Check )
 /* Advertisement should work without initializing optional properties (device's name) */
 TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_Without_Properties )
 {
-    IotTestBleHal_SetAdvData( eBTuuidType128, 0, NULL );
+    prv_test_number = 0x02;
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
     IotTestBleHal_StartAdvertisement();
     /* Connect for evaluate KPI for next test case. */
     IotTestBleHal_WaitConnection( true );
@@ -255,8 +291,9 @@ TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_Without_Properties 
 /* Advertisement should work with 16bit Service UUID as well */
 TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_16bit_ServiceUUID )
 {
+    prv_test_number = 0x03;
     IotTestBleHal_SetAdvProperty();
-    IotTestBleHal_SetAdvData( eBTuuidType16, 0, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType16), 0, NULL );
     IotTestBleHal_StartAdvertisement();
     /* Simple Connect */
     IotTestBleHal_WaitConnection( true );
@@ -266,6 +303,7 @@ TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_16bit_ServiceU
 
 TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_ManufactureData )
 {
+    prv_test_number = 0x04;
     /* Manufacturer-specific Data
      * First two bytes are company ID (randomly select Espressif(0x02E5) for test purpose)
      * Next bytes are defined by the company (randomly select unit8_t 5 for test purpose)*/
@@ -275,19 +313,19 @@ TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_ManufactureDat
     IotTestBleHal_SetAdvProperty();
 
     /* Check when manufacture data length is 0, but pointer is valid */
-    IotTestBleHal_SetAdvData( eBTuuidType128, 0, ( char * ) pusManufacturerData );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, ( char * ) pusManufacturerData );
     IotTestBleHal_StartAdvertisement();
     IotTestBleHal_WaitConnection( true );
     IotTestBleHal_WaitConnection( false );
 
     /* Check when manufacture data pointer is NULL, but length is not 0 */
-    IotTestBleHal_SetAdvData( eBTuuidType128, usManufacturerLen, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), usManufacturerLen, NULL );
     IotTestBleHal_StartAdvertisement();
     IotTestBleHal_WaitConnection( true );
     IotTestBleHal_WaitConnection( false );
 
     /* Check when manufacture data length is not 0, and pointer is valid */
-    IotTestBleHal_SetAdvData( eBTuuidType128, usManufacturerLen, ( char * ) pusManufacturerData );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), usManufacturerLen, ( char * ) pusManufacturerData );
     IotTestBleHal_StartAdvertisement();
     IotTestBleHal_WaitConnection( true );
     IotTestBleHal_WaitConnection( false );
@@ -297,7 +335,7 @@ TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_With_ManufactureDat
 TEST( Full_BLE_Integration_Test, BLE_Advertise_Before_Set_Data )
 {
     IotTestBleHal_StartAdvertisement();
-    IotTestBleHal_SetAdvData( eBTuuidType128, 0, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
     BTStatus_t xStatus = _pxBTLeAdapterInterface->pxStopAdv( _ucBLEAdapterIf );
     TEST_ASSERT_EQUAL( eBTStatusSuccess, xStatus );
 }
@@ -329,6 +367,7 @@ TEST( Full_BLE_Integration_Test, BLE_Enable_Disable_Time_Limit )
 
 TEST( Full_BLE_Integration_Test, BLE_Init_Enable_Twice )
 {
+    prv_test_number = 0x0A;
     BTStatus_t xStatus = eBTStatusSuccess;
     clock_t returnTime, cbRecvTime;
 
@@ -357,9 +396,10 @@ TEST( Full_BLE_Integration_Test, BLE_Init_Enable_Twice )
  * Make sure KPI is consistent after reset BT.*/
 TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_Interval_Consistent_After_BT_Reset )
 {
+    prv_test_number = 0x05;
     BTStatus_t xStatus = eBTStatusSuccess;
 
-    IotTestBleHal_SetAdvData( eBTuuidType128, 0, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
     IotTestBleHal_StartAdvertisement();
 
     IotTestBleHal_WaitConnection( true );
@@ -380,7 +420,7 @@ TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_Interval_Consistent
     IotTestBleHal_BLEGATTInit( &_xBTGattServerCb, true );
     prvCreateAndStartServiceB();
     IotTestBleHal_SetAdvProperty();
-    IotTestBleHal_SetAdvData( eBTuuidType128, 0, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
 
     /* Third time connection begins. Got third KPI. */
     IotTestBleHal_StartAdvertisement();
@@ -403,6 +443,7 @@ TEST( Full_BLE_Integration_Test_Advertisement, BLE_Advertise_Interval_Consistent
 /* 2 chars has the same descriptor uuid which can cause read/write the descriptors of chars to return wrong values. */
 TEST( Full_BLE_Integration_Test_Connection, BLE_Write_Notification_Size_Greater_Than_MTU_3 )
 {
+    prv_test_number = 0x06;
     BTStatus_t xStatus, xfStatus;
     uint8_t ucLargeBuffer[ bletestsMTU_SIZE1 + 2 ];
     uint8_t cccdFValue;
@@ -446,6 +487,7 @@ TEST( Full_BLE_Integration_Test_Connection, BLE_Write_Notification_Size_Greater_
 
 TEST( Full_BLE_Integration_Test_Connection, BLE_Send_Data_After_Disconnected )
 {
+    prv_test_number = 0x08;
     BLETESTwriteAttrCallback_t xWriteEvent;
     BLETESTreadAttrCallback_t xReadEvent;
 
@@ -470,7 +512,7 @@ TEST( Full_BLE_Integration_Test_Connection, BLE_Send_Data_After_Disconnected )
 
     /* Advertise and Reconnect */
     IotTestBleHal_SetAdvProperty();
-    IotTestBleHal_SetAdvData( eBTuuidType128, 0, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
     IotTestBleHal_StartAdvertisement();
     IotTestBleHal_WaitConnection( true );
 
@@ -489,9 +531,10 @@ TEST( Full_BLE_Integration_Test_Connection, BLE_Send_Data_After_Disconnected )
 /* trigger Adv Stop callback AdvStartCB(with start=false) when Adv timeout. */
 TEST( Full_BLE_Integration_Test_Advertisement, BLE_Integration_Connection_Timeout )
 {
+    prv_test_number = 0x07;
     /* Advertise and Connect */
     IotTestBleHal_SetAdvProperty();
-    IotTestBleHal_SetAdvData( eBTuuidType32, 0, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType32), 0, NULL );
     IotTestBleHal_StartAdvertisement();
     prvShortWaitConnection();
 }
@@ -662,31 +705,12 @@ void prvCreateAndStartServiceB()
     {
         uint16_t usServiceDataLen;
         char * pcServiceData;
-        uint8_t serviceUUID_128[ bt128BIT_UUID_LEN ] = bletestsFREERTOS_SVC_UUID_128;
         /* To make sure stack creates their own pointers, use local variables */
         BTGattAdvertismentParams_t l_xAdvertisementConfigA;
         BTGattAdvertismentParams_t l_xAdvertisementConfigB;
         size_t xNbServices;
 
-        BTUuid_t xServiceUuid =
-        {
-            .ucType = type
-        };
-
-        switch( type )
-        {
-            case eBTuuidType16:
-                xServiceUuid.uu.uu16 = bletestsFREERTOS_SVC_UUID_16;
-                break;
-
-            case eBTuuidType32:
-                xServiceUuid.uu.uu32 = bletestsFREERTOS_SVC_UUID_32;
-                break;
-
-            case eBTuuidType128:
-                memcpy( xServiceUuid.uu.uu128, serviceUUID_128, sizeof( serviceUUID_128 ) );
-                break;
-        }
+        BTUuid_t xServiceUuid = Test_Service_UUID_setup(eBTuuidType128);
 
         usServiceDataLen = 0;
         pcServiceData = NULL;
@@ -826,7 +850,7 @@ void Advertisement_setup()
     GATT_setup();
     prvCreateAndStartServiceB();
     IotTestBleHal_SetAdvProperty();
-    IotTestBleHal_SetAdvData( eBTuuidType128, 0, NULL );
+    IotTestBleHal_SetAdvData( Test_Service_UUID_setup(eBTuuidType128), 0, NULL );
 
     /* Second time connection begins. Got second KPI. */
     IotTestBleHal_StartAdvertisement();

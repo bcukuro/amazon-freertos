@@ -25,31 +25,37 @@
 
 import Queue
 import sys
-import os
 import threading
 import securityAgent
+import bleAdapter
 import time
 from testClass import runTest
 from bleAdapter import bleAdapter
-import testutils
+from test_cases import test_uuid
 
 
 def main():
-    agent = None
-    numberOfReconnect = 1
-    numberOfInit = 1
-    numberOfEnable = 1
-    isTestSuccessFull = True
-
     scan_filter = dict()
 
     bleAdapter.init()
-    agent = securityAgent.createSecurityAgent(agent=agent)
+    agent = securityAgent.createSecurityAgent()
 
-    for i in range(10):
-        isTestSuccessFull = runTest.Advertise_With_16bit_ServiceUUID(
-            scan_filter=scan_filter, bleAdapter=bleAdapter)
-        runTest.submitTestResult(isTestSuccessFull,
-                                 runTest.Advertise_With_16bit_ServiceUUID)
+    while True:
+        scan_filter.update({"UUIDs": list(test_uuid.keys())})
+        bleAdapter.setDiscoveryFilter(scan_filter)
 
-    runTest.printTestsSummary()
+        # Discovery test
+        bleAdapter.startDiscovery(runTest.discoveryEventCb)
+        runTest.mainloop.run()
+        isTestSuccessFull = True
+        runTest.submitTestResult(isTestSuccessFull, runTest.advertisement)
+        bleAdapter.stopDiscovery()
+        
+        test_uuid[runTest.TEST_CASE_UUID]["test_function"](scan_filter=scan_filter, bleAdapter=bleAdapter, agent=agent)
+
+        securityAgent.removeSecurityAgent()
+
+        time.sleep(2)
+        runTest.printTestsSummary()
+
+        agent = securityAgent.createSecurityAgent(agent=agent)

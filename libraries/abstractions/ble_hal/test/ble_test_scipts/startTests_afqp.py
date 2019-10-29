@@ -33,21 +33,7 @@ from testClass import runTest
 from bleAdapter import bleAdapter
 
 
-def main():
-    scan_filter = dict()
-
-    bleAdapter.init()
-    agent = securityAgent.createSecurityAgent()
-
-    scan_filter.update({"UUIDs": [runTest.DUT_UUID_128]})
-    bleAdapter.setDiscoveryFilter(scan_filter)
-    # Discovery test
-    bleAdapter.startDiscovery(runTest.discoveryEventCb)
-    runTest.mainloop.run()
-    isTestSuccessFull = True
-    runTest.submitTestResult(isTestSuccessFull, runTest.advertisement)
-    bleAdapter.stopDiscovery()
-
+def main_afqp(bleAdapter, agent, scan_filter):
     # Simple Connection test
     testDevice = runTest.getTestDevice()
     isTestSuccessFull = bleAdapter.connect(testDevice)

@@ -59,6 +59,7 @@
 /* Configs for enable/diable test cases */
 #include "iot_test_ble_hal_config_defaults.h"
 
+
 /**
  * @brief Connection parameters.
  */
@@ -70,21 +71,21 @@ typedef struct
     uint32_t timeout;     /**< Connection timeout. */
 } IotBleConnectionParam_t;
 
-#define bletestsAPP_UUID                 { 0x11, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-#define bletestsSERVER_UUID              { 0x22, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-#define bletestsFREERTOS_SVC_UUID_128    { 0x5A, 0xDB, 0x32, 0xF9, 0x79, 0xE6, 0xB5, 0x83, 0xFB, 0x4E, 0xAF, 0x48, 0x68, 0x11, 0x7F, 0x8A }
-#define bletestsFREERTOS_SVC_UUID_32     0x8A7F1168
-#define bletestsFREERTOS_SVC_UUID_16     0xabcd
+#define bletestsAPP_UUID                            { 0x11, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define bletestsSERVER_UUID                         { 0x22, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define bletestsFREERTOS_SVC_UUID_128_AFQP          { 0x00, 0x01, 0x32, 0xF9, 0x79, 0xE6, 0xB5, 0x83, 0xFB, 0x4E, 0xAF, 0x48, 0x68, 0x11, 0x7F, 0x8A }
+#define bletestsFREERTOS_SVC_UUID_32                0x8A7F1168
+#define bletestsFREERTOS_SVC_UUID_16                0xabcd
 
-#define NO_HANDLE                        -1
+#define NO_HANDLE                                   -1
 
-#define MAX_EVENT                        20
+#define MAX_EVENT                                   20
 
-#define bletestsDEFAULT_CHAR_VALUE       "hello"
-#define bletestsSTRINGYFIED_UUID_SIZE    36 /* like "8a7f1168-48af-4efb-83b5-e679f9320002" */
-#define bletests_LONG_WRITE_LEN          210
-#define bletestsFULL_PERMISSIONS         ( eBTPermRead | eBTPermWrite )
-#define bletestsNB_INCLUDEDSERVICES      1
+#define bletestsDEFAULT_CHAR_VALUE                  "hello"
+#define bletestsSTRINGYFIED_UUID_SIZE               36 /* like "8a7f1168-48af-4efb-83b5-e679f9320002" */
+#define bletests_LONG_WRITE_LEN                     210
+#define bletestsFULL_PERMISSIONS                    ( eBTPermRead | eBTPermWrite )
+#define bletestsNB_INCLUDEDSERVICES                 1
 
 #define bletestsCCCD            \
     {                           \
@@ -192,7 +193,7 @@ typedef struct
 #define QUEUE_LENGTH                          20
 #define ITEM_SIZE                             sizeof( void * )
 
-#define BLE_TESTS_WAIT                        10000                 /* Wait 10s max */
+#define BLE_TESTS_WAIT                        60000                 /* Wait 10s max */
 #define BLE_TESTS_SHORT_WAIT                  4000                  /* Wait 4s max */
 
 typedef enum
@@ -525,7 +526,7 @@ void IotTestBleHal_BLEGAPInit( BTBleAdapterCallbacks_t * pBTBleAdapterCb,
 void IotTestBleHal_BLEGATTInit( BTGattServerCallbacks_t * pBTGattServerCb,
                                 bool EnableCb );
 void IotTestBleHal_SetAdvProperty( void );
-void IotTestBleHal_SetAdvData( BTuuidType_t Type,
+void IotTestBleHal_SetAdvData( BTUuid_t xServiceUuid,
                                uint16_t usManufacturerLen,
                                char * pcManufacturerData );
 
